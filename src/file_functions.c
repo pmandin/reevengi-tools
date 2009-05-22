@@ -73,7 +73,7 @@ void save_file(const char *filename, void *buffer, int length)
 
 	/* Load file */
 #ifdef WIN32
-	handle = _creat(filename, _S_IREAD | _S_IWRITE);
+	handle = _open(filename, _O_CREAT | _O_TRUNC | _O_BINARY | _O_RDWR, _S_IREAD | _S_IWRITE);
 #else
 	handle = creat(filename, 0664);
 #endif
