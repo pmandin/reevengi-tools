@@ -33,7 +33,7 @@ char *load_file(const char *filename, int *length)
 
 	/* Load file */
 #ifdef WIN32
-	handle = _open(filename, O_RDONLY);
+	handle = _open(filename, O_RDONLY|_O_BINARY);
 #else
 	handle = open(filename, O_RDONLY);
 #endif
