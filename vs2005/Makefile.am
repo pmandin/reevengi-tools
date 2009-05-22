@@ -1,3 +1,1 @@
-EXTRA_DIST = reevengi.sln reevengi.vcproj config.h
-
-
+EXTRA_DIST = reevengi-tools.sln pak2tim.vcproj
