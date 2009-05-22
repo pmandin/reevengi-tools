@@ -21,6 +21,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef WIN32
+#include <sys/stat.h>
+#include <io.h>
+#endif
 
 char *load_file(const char *filename, int *length)
 {
@@ -28,23 +32,37 @@ char *load_file(const char *filename, int *length)
 	char *buffer;
 
 	/* Load file */
+#ifdef WIN32
+	handle = _open(filename, O_RDONLY);
+#else
 	handle = open(filename, O_RDONLY);
+#endif
 	if (handle<0) {
 		fprintf(stderr, "Unable to open %s\n", filename);	
 		return NULL;
 	}
 
+#ifdef WIN32
+	*length = _lseek(handle, 0, SEEK_END);
+	_lseek(handle, 0, SEEK_SET); 	
+#else
 	*length = lseek(handle, 0, SEEK_END);
 	lseek(handle, 0, SEEK_SET); 	
+#endif
 
 	buffer = (char *)malloc(*length);
 	if (buffer==NULL) {
-		fprintf(stderr, "Unable to allocate %d bytes\n", length);
+		fprintf(stderr, "Unable to allocate %d bytes\n", *length);
 		return NULL;
 	}
 
+#ifdef WIN32
+	_read(handle, buffer, *length);
+	_close(handle);
+#else
 	read(handle, buffer, *length);
 	close(handle);
+#endif
 
 	return buffer;
 }
@@ -54,12 +72,21 @@ void save_file(const char *filename, void *buffer, int length)
 	int handle;
 
 	/* Load file */
+#ifdef WIN32
+	handle = _creat(filename, _S_IREAD | _S_IWRITE);
+#else
 	handle = creat(filename, 0664);
+#endif
 	if (handle<0) {
 		fprintf(stderr, "Unable to open %s\n", filename);	
 		return;
 	}
 
+#ifdef WIN32
+	_write(handle, buffer, length);
+	_close(handle);
+#else
 	write(handle, buffer, length);
 	close(handle);
+#endif
 }
