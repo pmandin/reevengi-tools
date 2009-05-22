@@ -1,0 +1,131 @@
+				Reevengi
+
+		A small background image viewer for
+			Resident Evil games
+
+
+
+0 Disclaimer
+------------
+
+This software is just a background image viewer for some versions of the games.
+Use at your own risks.
+
+
+1 Libraries dependencies
+------------------------
+
+- SDL for video and input (mandatory).
+  http://www.libsdl.org/
+
+- SDL_image with libjpeg support (optional, for RE3 PC).
+  http://www.libsdl.org/projects/SDL_image/
+
+- FFmpeg for movie player (optional, for movie player).
+  http://ffmpeg.mplayerhq.hu/
+
+- PhysicsFS for all filesystem access (mandatory).
+  http://www.icculus.org/physfs/
+
+  Note: You need to apply the patch in the diff directory to the stable 1.0
+  release of PhysicsFS to have support for Resident Evil 3 PC archive files.
+
+
+2 Command-line parameters
+-------------------------
+
+"-basedir <path>" to give the directory where the game files are.
+  Default is current directory.
+  Example: -basedir /demos/re2demo
+
+"-gamma <value>" to change the gamma correction of the lightmaps.
+  Default is 1.0 .
+  Example: -gamma 1.2
+
+"-movie" to enable movie player mode.
+
+"-opengl" to enable OpenGL renderer.
+
+"-aspect <x>:<y>" to force an aspect ratio if misdetected.
+
+"-verbose <n>"  to change verbosity level.
+  Default is 0.
+
+"-logfile <filename>" to change log file.
+  Default is reevengi.log
+
+"-help" displays a little help.
+
+"-dither" to dither background image (in 8bits mode only).
+
+
+3 Controls
+----------
+
+3.1 Keyboard
+------------
+
+ESC		quit
+F1		screenshot
+F2		wireframe rendering for model
+F3		filled rendering for model
+F4		gouraud rendering for model
+F5		textured rendering for model
+Alt+Enter	toggle between fullscreen and windowed mode.
+
+A		decrement gamma
+Q		increment gamma
+W		reset gamma
+
+Z		previous stage / previous movie
+S		next stage / next movie
+X		reset stage / reset movie
+
+E		previous room
+D		next room
+C		reset room
+
+R		previous camera
+F		next camera
+V		reset camera
+
+T		previous model
+G		next model
+B		reset model
+
+Y		toggle grid display
+H		toggle background restoration display
+SPACE		refresh background, move player at current camera position
+Arrow keys	Move player
+Pageup/down	Move player up/down (Atari: use ClrHome/Insert)
+
+4 Supported games
+-----------------
+
+Resident Evil, PS1, Demo
+Resident Evil, PS1, Game
+Resident Evil, PC, Game
+Resident Evil 2, PS1, Demo
+Resident Evil 2, PS1, Game
+Resident Evil 2, PC, Demo
+Resident Evil 2, PC, Game
+Resident Evil 3, PS1, Game
+Resident Evil 3, PC, Demo
+Resident Evil 3, PC, Game
+
+Missing:
+- other console versions
+
+
+5 Notes/bugs
+------------
+
+All PS1 demos and games use same image format, so it should be easy to add
+support for them. I just need a list of all files on each CD (recursive directory
+tree).
+
+RE3 PS1: No model rendering, don't know where they are stored.
+
+-- 
+Patrice Mandin <patmandin@gmail.com>
+Web: http://pmandin.atari.org/

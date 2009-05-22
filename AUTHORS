@@ -1,0 +1,37 @@
+Patrice Mandin <patmandin@gmail.com>
+  http://pmandin.atari.org/
+
+Extra parts:
+
+- LZW depacker
+Scummvm project
+  http://www.scummvm.org/
+
+- MDEC depacker
+PCSX
+  http://www.pcsx.net/
+Psxdev project
+  http://www.nobis-crew.org/psxdev/
+
+- VLC depacker
+Psxdev project
+  http://www.nobis-crew.org/psxdev/
+
+- Fast IDCT
+Independent JPEG Group's software
+  http://www.ijg.org/
+
+- Ray/Plane intersection
+Paul Bourke
+http://local.wasp.uwa.edu.au/~pbourke/geometry/planeline/
+
+- View frustum culling
+Antonio Ramires Fernandes
+http://www.lighthouse3d.com/opengl/viewfrustum/
+
+- Game state independent of frame rate
+http://gafferongames.wordpress.com/game-physics/fix-your-timestep/
+
+- S-buffer rendering
+Paul Nettle
+http://www.gamedev.net/reference/articles/article668.asp
