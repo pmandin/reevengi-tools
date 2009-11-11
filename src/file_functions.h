@@ -21,8 +21,6 @@
 #ifndef FILE_FUNCTIONS_H
 #define FILE_FUNCTIONS_H 1
 
-char *load_file(const char *filename, int *length);
-
 void save_file(const char *filename, void *buffer, int length);
 
 #endif /* FILE_FUNCTIONS_H */

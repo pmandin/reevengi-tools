@@ -1,7 +1,7 @@
 /*
-	File loader/saver
+	VLC file depacker
 
-	Copyright (C) 2009	Patrice Mandin
+	Copyright (C) 2007	Patrice Mandin
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,23 +18,9 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef DEPACK_VLC_H
+#define DEPACK_VLC_H
 
-#include <SDL.h>
+void vlc_depack(SDL_RWops *src, Uint8 **dstPointer, int *dstLength);
 
-void save_file(const char *filename, void *buffer, int length)
-{
-	SDL_RWops *dst;
-
-	dst = SDL_RWFromFile(filename, "wb");
-	if (!dst) {
-		fprintf(stderr, "Can not create %s for writing\n", filename);
-		return;
-	}
-
-	SDL_RWwrite(dst, buffer, length, 1);
-
-	SDL_FreeRW(dst);
-}
+#endif /* DEPACK_VLC_H */

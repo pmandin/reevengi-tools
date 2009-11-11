@@ -1,7 +1,7 @@
 /*
-	File loader/saver
+	IDCT
 
-	Copyright (C) 2009	Patrice Mandin
+	Copyright (C) 2007	Patrice Mandin
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,23 +18,15 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef IDCTFST_H
+#define IDCTFST_H
 
-#include <SDL.h>
+/*--- Types ---*/
 
-void save_file(const char *filename, void *buffer, int length)
-{
-	SDL_RWops *dst;
+#define	BLOCK		Sint32
 
-	dst = SDL_RWFromFile(filename, "wb");
-	if (!dst) {
-		fprintf(stderr, "Can not create %s for writing\n", filename);
-		return;
-	}
+/*--- Functions ---*/
 
-	SDL_RWwrite(dst, buffer, length, 1);
+void IDCT(BLOCK *blk,int k);
 
-	SDL_FreeRW(dst);
-}
+#endif /* IDCTFST_H */

@@ -1,5 +1,5 @@
 /*
-	PAK file depacker
+	BSS file depacker
 
 	Copyright (C) 2009	Patrice Mandin
 
@@ -28,10 +28,9 @@
 
 #include <SDL.h>
 
-#include "depack_pak.h"
 #include "file_functions.h"
 
-void save_tim(const char *src_filename, Uint8 *buffer, int length)
+void save_bmp(const char *src_filename, SDL_Surface *image)
 {
 	SDL_RWops *dst;
 	int dst_namelength = strlen(src_filename)+1;
@@ -53,20 +52,20 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 			++posname;	/* Go after \\ */
 		} else {
 			/* No directory in source filename */
-			posname = src_filename;
+			posname = (char *) src_filename;
 		}
 	}
 	sprintf(dst_filename, "%s", posname);
 
 	posext = strrchr(dst_filename, '.');
 	if (!posext) {
-		strcat(dst_filename, ".tim");
+		strcat(dst_filename, ".bmp");
 	} else {
 		++posext;
-		strcpy(posext, "tim");
+		strcpy(posext, "bmp");
 	}
 
-	save_file(dst_filename, buffer, length);
+	SDL_SaveBMP(image, dst_filename);
 
 	free(dst_filename);
 }
@@ -74,11 +73,12 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 int main(int argc, char **argv)
 {
 	SDL_RWops *src;
+	SDL_RWops *mdec_src;
 	Uint8 *dstBuffer;
 	int dstBufLen;
 
 	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.pak\n", argv[0]);
+		fprintf(stderr, "Usage: %s /path/to/filename.bss\n", argv[0]);
 		return 1;
 	}
 
@@ -93,15 +93,32 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Can not open %s for reading\n", argv[1]);
 		return 1;
 	}
-	pak_depack(src, &dstBuffer, &dstBufLen);
+	vlc_depack(src, &dstBuffer, &dstBufLen);
 	SDL_FreeRW(src);
-
+			
 	if (dstBuffer && dstBufLen) {
-		save_tim(argv[1], dstBuffer, dstBufLen);
+		SDL_RWops *mdec_src;
 
+		mdec_src = SDL_RWFromMem(dstBuffer, dstBufLen);
+		if (mdec_src) {
+			Uint8 *dstMdecBuf;
+			int dstMdecLen;
+
+			mdec_depack(mdec_src, &dstMdecBuf, &dstMdecLen, 320,240);
+			SDL_FreeRW(mdec_src);
+
+			if (dstMdecBuf && dstMdecLen) {
+				SDL_Surface *image = mdec_surface(dstMdecBuf,320,240,0);
+				if (image) {
+					save_bmp(argv[1], image);
+
+					SDL_FreeSurface(image);
+				}
+
+				free(dstMdecBuf);
+			}
+		}
 		free(dstBuffer);
-	} else {
-		fprintf(stderr, "Error depacking file\n");
 	}
 
 	return 0;
