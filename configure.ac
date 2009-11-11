@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(reevengi-tools, 0.1, patmandin@gmail.com)
+AC_INIT(reevengi-tools, 0.2, patmandin@gmail.com)
 AC_CONFIG_SRCDIR([src/pak2tim.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([autotools])
@@ -24,7 +24,19 @@ AC_C_CONST
 # Checks for library functions.
 #AC_FUNC_MALLOC
 #AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memset strrchr])
+AC_CHECK_FUNCS([memset strrchr pow])
+
+# Checks for libraries.
+
+# Math
+
+if test "x$ac_cv_func_pow" = "xno"; then
+	LIBS="$LIBS -lm"
+fi
+
+# SDL
+
+AM_PATH_SDL( 1.2.0 , :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile

@@ -21,6 +21,6 @@
 #ifndef DEPACK_PAK_H
 #define DEPACK_PAK_H
 
-void pak_depack(char *srcPointer, int srcLength, char **dstPointer, int *dstLength);
+void pak_depack(SDL_RWops *src, Uint8 **dstPointer, int *dstLength);
 
 #endif /* DEPACK_PAK_H */

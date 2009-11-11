@@ -26,10 +26,12 @@
 #include "config.h"
 #endif
 
+#include <SDL.h>
+
 #include "depack_pak.h"
 #include "file_functions.h"
 
-void save_tim(const char *src_filename, char *buffer, int length)
+void save_tim(const char *src_filename, Uint8 *buffer, int length)
 {
 	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
@@ -70,29 +72,32 @@ void save_tim(const char *src_filename, char *buffer, int length)
 
 int main(int argc, char **argv)
 {
-	char *src_file, *dst_file;
-	int src_length, dst_length;
+	SDL_RWops *src;
+	Uint8 *dstBuffer;
+	int dstBufLen;
 
 	if (argc<2) {
 		fprintf(stderr, "Usage: %s /path/to/filename.pak\n", argv[0]);
 		return 1;
 	}
 
-	src_file = load_file(argv[1], &src_length);
-	if (!src_file) {
+	src = SDL_RWFromFile(argv[1], "rb");
+	if (!src) {
+		fprintf(stderr, "Can not open %s for reading\n", argv[1]);
 		return 1;
 	}
 
-	pak_depack(src_file, src_length, &dst_file, &dst_length);
+	pak_depack(src, &dstBuffer, &dstBufLen);
 
-	if (dst_file && dst_length) {
-		save_tim(argv[1], dst_file, dst_length);
+	if (dstBuffer && dstBufLen) {
+		save_tim(argv[1], dstBuffer, dstBufLen);
 
-		free(dst_file);
+		free(dstBuffer);
 	} else {
 		fprintf(stderr, "Error depacking file\n");
 	}
-	free(src_file);
+
+	SDL_FreeRW(src);
 
 	return 0;
 }

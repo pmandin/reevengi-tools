@@ -21,8 +21,9 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <fcntl.h>
+
+#include <SDL.h>
 
 /*--- Defines ---*/
 
@@ -40,11 +41,7 @@ typedef struct {
 
 /*--- Variables ---*/
 
-static char *srcBufPtr;
-static int srcCurLen;
-static int srcBufLen;
-
-static char *dstPointer;
+static Uint8 *dstPointer;
 static int dstBufLen;
 static int dstOffset;
 
@@ -56,7 +53,7 @@ static unsigned char decodeStack[DECODE_SIZE];
 
 /*--- Functions ---*/
 
-static int pak_read_bits(int num_bits)
+static int pak_read_bits(SDL_RWops *src, int num_bits)
 {
 	unsigned long value=0, mask;
 
@@ -64,10 +61,10 @@ static int pak_read_bits(int num_bits)
 
 	while (mask>0) {
 		if (tmpMask == 0x80) {
-			srcByte=0;
-			if (srcCurLen<srcBufLen) {
-				srcByte = srcBufPtr[srcCurLen++];
+			if ( !SDL_RWread( src, &srcByte, 1, 1 ) ) {
+				srcByte = 0;
 			}
+			/*srcByte = srcPointer[srcOffset++];*/
 		}
 
 		if ((tmpMask & srcByte)!=0) {
@@ -96,7 +93,7 @@ static int pak_decodeString(int decodeStackOffset, unsigned long code)
 	return decodeStackOffset;
 }
 
-static void pak_write_dest(char value)
+static void pak_write_dest(Uint8 value)
 {
 	if ((dstPointer==NULL) || (dstOffset>=dstBufLen)) {
 		dstBufLen += CHUNK_SIZE;
@@ -110,15 +107,11 @@ static void pak_write_dest(char value)
 	dstPointer[dstOffset++] = value;
 }
 
-void pak_depack(char *srcPointer, int srcLength, char **dstBufPtr, int *dstLength)
+void pak_depack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 {
 	int num_bits_to_read, i;
 	int lzwnew, c, lzwold, lzwnext;
 	int stop = 0;
-
-	srcBufPtr = srcPointer;
-	srcCurLen = 0;
-	srcBufLen = srcLength;
 
 	*dstBufPtr = dstPointer = NULL;
 	*dstLength = dstBufLen = dstOffset = 0;
@@ -135,7 +128,7 @@ void pak_depack(char *srcPointer, int srcLength, char **dstBufPtr, int *dstLengt
 		lzwnext = 0x103;
 		num_bits_to_read = 9;
 
-		c = lzwold = pak_read_bits(num_bits_to_read);
+		c = lzwold = pak_read_bits(src, num_bits_to_read);
 
 		if (lzwold == 0x100) {
 			break;
@@ -144,7 +137,7 @@ void pak_depack(char *srcPointer, int srcLength, char **dstBufPtr, int *dstLengt
 		pak_write_dest(c);
 
 		for(;;) {
-			lzwnew = pak_read_bits(num_bits_to_read);
+			lzwnew = pak_read_bits(src, num_bits_to_read);
 
 			if (lzwnew == 0x100) {
 				stop = 1;
@@ -182,6 +175,6 @@ void pak_depack(char *srcPointer, int srcLength, char **dstBufPtr, int *dstLengt
 	}
 
 	/* Return depacked buffer */
-	*dstBufPtr = dstPointer;
+	*dstBufPtr = (Uint8 *) dstPointer;
 	*dstLength = dstOffset;
 }
