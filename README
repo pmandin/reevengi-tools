@@ -22,8 +22,15 @@ created in current directory.
 2 Tools list
 ------------
 
-pak2tim:	Convert Resident Evil PC PAK images files to TIM images.
+adt2img:	Depack Resident Evil 2 PC ADT image files.
+		The result is either a raw image (saved to BMP in this case)
+		or a TIM image (saved to TIM).
 
+bss2bmp:	Depack PS1 BSS image files.
+		The result is saved to a BMP image.
+
+pak2tim:	Depack Resident Evil PC PAK image files.
+		The result is saved to a TIM image.
 
 -- 
 Patrice Mandin <patmandin@gmail.com>
