@@ -65,6 +65,7 @@ void save_bmp(const char *src_filename, SDL_Surface *image)
 		strcpy(posext, "bmp");
 	}
 
+	printf("Saving to %s\n", dst_filename);
 	SDL_SaveBMP(image, dst_filename);
 
 	free(dst_filename);

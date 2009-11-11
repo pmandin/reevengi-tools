@@ -66,6 +66,7 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 		strcpy(posext, "tim");
 	}
 
+	printf("Saving to %s\n", dst_filename);
 	save_file(dst_filename, buffer, length);
 
 	free(dst_filename);

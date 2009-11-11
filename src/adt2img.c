@@ -65,6 +65,7 @@ void save_bmp(const char *src_filename, SDL_Surface *image)
 		strcpy(posext, "bmp");
 	}
 
+	printf("Saving to %s\n", dst_filename);
 	SDL_SaveBMP(image, dst_filename);
 
 	free(dst_filename);
@@ -105,6 +106,7 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 		strcpy(posext, "tim");
 	}
 
+	printf("Saving to %s\n", dst_filename);
 	save_file(dst_filename, buffer, length);
 
 	free(dst_filename);
