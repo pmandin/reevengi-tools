@@ -1,3 +1,8 @@
+v 0.2
+
+- Added depacker for BSS and ADT image files.
+
+
 v 0.1
 
 - First release
