@@ -33,6 +33,7 @@
 
 void save_tim(const char *src_filename, Uint8 *buffer, int length)
 {
+	SDL_RWops *dst;
 	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
 	char *posname, *posext;
@@ -52,7 +53,7 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 			++posname;	/* Go after \\ */
 		} else {
 			/* No directory in source filename */
-			posname = src_filename;
+			posname = (char *) src_filename;
 		}
 	}
 	sprintf(dst_filename, "%s", posname);
@@ -65,7 +66,14 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 		strcpy(posext, "tim");
 	}
 
-	save_file(dst_filename, buffer, length);
+	dst = SDL_RWFromFile(dst_filename, "wb");
+	if (dst) {
+		SDL_RWwrite(dst, buffer, length, 1);
+
+		SDL_FreeRW(dst);
+	} else {
+		fprintf(stderr, "Can not create %s for writing\n", dst_filename);
+	}
 
 	free(dst_filename);
 }
