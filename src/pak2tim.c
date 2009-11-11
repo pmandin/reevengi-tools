@@ -53,7 +53,7 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 			++posname;	/* Go after \\ */
 		} else {
 			/* No directory in source filename */
-			posname = src_filename;
+			posname = (char *) src_filename;
 		}
 	}
 	sprintf(dst_filename, "%s", posname);
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	pak_depack(src, &dstBuffer, &dstBufLen);
-	SDL_FreeRW(src);
+	SDL_RWclose(src);
 
 	if (dstBuffer && dstBufLen) {
 		save_tim(argv[1], dstBuffer, dstBufLen);

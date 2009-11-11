@@ -1,5 +1,5 @@
 /*
-	BSS file depacker
+	ADT file depacker
 
 	Copyright (C) 2009	Patrice Mandin
 
@@ -70,15 +70,54 @@ void save_bmp(const char *src_filename, SDL_Surface *image)
 	free(dst_filename);
 }
 
+void save_tim(const char *src_filename, Uint8 *buffer, int length)
+{
+	SDL_RWops *dst;
+	int dst_namelength = strlen(src_filename)+1;
+	char *dst_filename;
+	char *posname, *posext;
+
+	dst_filename = (char *) malloc(dst_namelength);
+	if (!dst_filename) {
+		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
+		return;
+	}
+
+	posname = strrchr(src_filename, '/');
+	if (posname) {
+		++posname;	/* Go after / */
+	} else {
+		posname = strrchr(src_filename, '\\');
+		if (posname) {
+			++posname;	/* Go after \\ */
+		} else {
+			/* No directory in source filename */
+			posname = (char *) src_filename;
+		}
+	}
+	sprintf(dst_filename, "%s", posname);
+
+	posext = strrchr(dst_filename, '.');
+	if (!posext) {
+		strcat(dst_filename, ".tim");
+	} else {
+		++posext;
+		strcpy(posext, "tim");
+	}
+
+	save_file(dst_filename, buffer, length);
+
+	free(dst_filename);
+}
+
 int main(int argc, char **argv)
 {
 	SDL_RWops *src;
-	SDL_RWops *mdec_src;
 	Uint8 *dstBuffer;
 	int dstBufLen;
 
 	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.bss\n", argv[0]);
+		fprintf(stderr, "Usage: %s /path/to/filename.adt\n", argv[0]);
 		return 1;
 	}
 
@@ -93,32 +132,25 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Can not open %s for reading\n", argv[1]);
 		return 1;
 	}
-	vlc_depack(src, &dstBuffer, &dstBufLen);
+	adt_depack(src, &dstBuffer, &dstBufLen);
 	SDL_RWclose(src);
-			
+
 	if (dstBuffer && dstBufLen) {
-		SDL_RWops *mdec_src;
-
-		mdec_src = SDL_RWFromMem(dstBuffer, dstBufLen);
-		if (mdec_src) {
-			Uint8 *dstMdecBuf;
-			int dstMdecLen;
-
-			mdec_depack(mdec_src, &dstMdecBuf, &dstMdecLen, 320,240);
-			SDL_FreeRW(mdec_src);
-
-			if (dstMdecBuf && dstMdecLen) {
-				SDL_Surface *image = mdec_surface(dstMdecBuf,320,240,0);
-				if (image) {
-					save_bmp(argv[1], image);
-
-					SDL_FreeSurface(image);
-				}
-
-				free(dstMdecBuf);
+		if (dstBufLen == 320*256*2) {
+			/* Raw image, save as BMP */
+			SDL_Surface *image = adt_surface((Uint16 *) dstBuffer);
+			if (image) {
+				save_bmp(argv[1], image);
+				SDL_FreeSurface(image);
 			}
+		} else {
+			/* Tim image */
+			save_tim(argv[1], dstBuffer, dstBufLen);
 		}
+
 		free(dstBuffer);
+	} else {
+		fprintf(stderr, "Error depacking file\n");
 	}
 
 	return 0;
