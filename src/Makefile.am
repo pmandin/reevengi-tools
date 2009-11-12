@@ -1,4 +1,4 @@
-bin_PROGRAMS = adt2img bss2bmp pak2tim
+bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp
 
 AM_CFLAGS = $(SDL_CFLAGS)
 
@@ -17,6 +17,8 @@ bss2bmp_headers = depack_mdec.h depack_vlc.h idctfst.h
 pak2tim_SOURCES = pak2tim.c file_functions.c depack_pak.c
 
 pak2tim_headers = depack_pak.h
+
+pix2bmp_SOURCES = pix2bmp.c
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers)
