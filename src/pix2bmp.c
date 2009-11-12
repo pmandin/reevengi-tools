@@ -149,6 +149,10 @@ int convert_image(const char *filename)
 			width=40;
 			height=540;
 			break;
+		case 32768:
+			width=128;
+			height=128;
+			break;
 		case 86400:
 			width=40;
 			height=2160;
