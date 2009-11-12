@@ -1,6 +1,6 @@
-v 0.1
+v 0.2
 
-- First release.
+- Added depacker for BSS and ADT image files.
 
 
 See ChangeLog for older changes.

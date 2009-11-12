@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="pak2tim"
-	ProjectGUID="{8768E69E-8880-42E9-B19D-5BC588175D7D}"
-	RootNamespace="pak2tim"
+	Name="adt2img"
+	ProjectGUID="{86F98909-26FC-44C4-83A3-71E3BDC6CEF9}"
+	RootNamespace="adt2img"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -120,7 +120,7 @@
 				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_USE_MATH_DEFINES;HAVE_CONFIG_H;WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -136,7 +136,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib $(NoInherit)"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -179,34 +178,16 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\depack_pak.c"
+				RelativePath="..\src\adt2img.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\depack_adt.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\file_functions.c"
 				>
-			</File>
-			<File
-				RelativePath="..\src\pak2tim.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -215,7 +196,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\src\depack_pak.h"
+				RelativePath="..\src\depack_adt.h"
 				>
 			</File>
 			<File

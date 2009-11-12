@@ -28,11 +28,12 @@
 
 #include <SDL.h>
 
+#include "depack_vlc.h"
+#include "depack_mdec.h"
 #include "file_functions.h"
 
 void save_bmp(const char *src_filename, SDL_Surface *image)
 {
-	SDL_RWops *dst;
 	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
 	char *posname, *posext;
@@ -71,28 +72,17 @@ void save_bmp(const char *src_filename, SDL_Surface *image)
 	free(dst_filename);
 }
 
-int main(int argc, char **argv)
+int convert_image(const char *filename)
 {
 	SDL_RWops *src;
-	SDL_RWops *mdec_src;
 	Uint8 *dstBuffer;
 	int dstBufLen;
+	int retval = 1;
 
-	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.bss\n", argv[0]);
-		return 1;
-	}
-
-	if (SDL_Init(SDL_INIT_VIDEO)<0) {
-		fprintf(stderr, "Can not initialize SDL: %s\n", SDL_GetError());
-		return 1;
-	}
-	atexit(SDL_Quit);
-
-	src = SDL_RWFromFile(argv[1], "rb");
+	src = SDL_RWFromFile(filename, "rb");
 	if (!src) {
-		fprintf(stderr, "Can not open %s for reading\n", argv[1]);
-		return 1;
+		fprintf(stderr, "Can not open %s for reading\n", filename);
+		return retval;
 	}
 	vlc_depack(src, &dstBuffer, &dstBufLen);
 	SDL_RWclose(src);
@@ -106,14 +96,16 @@ int main(int argc, char **argv)
 			int dstMdecLen;
 
 			mdec_depack(mdec_src, &dstMdecBuf, &dstMdecLen, 320,240);
-			SDL_FreeRW(mdec_src);
+			SDL_RWclose(mdec_src);
 
 			if (dstMdecBuf && dstMdecLen) {
 				SDL_Surface *image = mdec_surface(dstMdecBuf,320,240,0);
 				if (image) {
-					save_bmp(argv[1], image);
+					save_bmp(filename, image);
 
 					SDL_FreeSurface(image);
+
+					retval = 0;
 				}
 
 				free(dstMdecBuf);
@@ -122,5 +114,26 @@ int main(int argc, char **argv)
 		free(dstBuffer);
 	}
 
-	return 0;
+	return retval;
+}
+
+int main(int argc, char **argv)
+{
+	int retval;
+
+	if (argc<2) {
+		fprintf(stderr, "Usage: %s /path/to/filename.bss\n", argv[0]);
+		return 1;
+	}
+
+	if (SDL_Init(SDL_INIT_VIDEO)<0) {
+		fprintf(stderr, "Can not initialize SDL: %s\n", SDL_GetError());
+		return 1;
+	}
+	atexit(SDL_Quit);
+
+	retval = convert_image(argv[1]);
+
+	SDL_Quit();
+	return retval;
 }

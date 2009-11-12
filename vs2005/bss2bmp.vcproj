@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="pak2tim"
-	ProjectGUID="{8768E69E-8880-42E9-B19D-5BC588175D7D}"
-	RootNamespace="pak2tim"
+	Name="bss2bmp"
+	ProjectGUID="{C3CCD7E4-9105-4C8B-B3DE-484982DAAC4F}"
+	RootNamespace="bss2bmp"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -120,7 +120,7 @@
 				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_USE_MATH_DEFINES;HAVE_CONFIG_H;WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -179,15 +179,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\depack_pak.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\file_functions.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\pak2tim.c"
+				RelativePath="..\src\bss2bmp.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -208,6 +200,18 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\src\depack_mdec.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\depack_vlc.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\idctfst.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -215,11 +219,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\src\depack_pak.h"
+				RelativePath="..\src\depack_mdec.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\file_functions.h"
+				RelativePath="..\src\depack_vlc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\idctfst.h"
 				>
 			</File>
 		</Filter>

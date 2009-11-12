@@ -4,6 +4,8 @@ AM_CFLAGS = $(SDL_CFLAGS)
 
 LIBS = $(SDL_LIBS)
 
+common_headers = file_functions.h
+
 adt2img_SOURCES = adt2img.c file_functions.c depack_adt.c
 
 adt2img_headers = depack_adt.h
@@ -16,4 +18,5 @@ pak2tim_SOURCES = pak2tim.c file_functions.c depack_pak.c
 
 pak2tim_headers = depack_pak.h
 
-EXTRA_DIST = $(adt2img_headers) $(bss2bmp_headers) $(pak2tim_headers)
+EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
+	$(pak2tim_headers)

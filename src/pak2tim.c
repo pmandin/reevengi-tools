@@ -33,7 +33,6 @@
 
 void save_tim(const char *src_filename, Uint8 *buffer, int length)
 {
-	SDL_RWops *dst;
 	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
 	char *posname, *posext;
@@ -72,11 +71,36 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 	free(dst_filename);
 }
 
-int main(int argc, char **argv)
+int convert_image(const char *filename)
 {
 	SDL_RWops *src;
 	Uint8 *dstBuffer;
 	int dstBufLen;
+	int retval = 1;
+
+	src = SDL_RWFromFile(filename, "rb");
+	if (!src) {
+		fprintf(stderr, "Can not open %s for reading\n", filename);
+		return retval;
+	}
+	pak_depack(src, &dstBuffer, &dstBufLen);
+	SDL_RWclose(src);
+
+	if (dstBuffer && dstBufLen) {
+		save_tim(filename, dstBuffer, dstBufLen);
+
+		free(dstBuffer);
+		retval = 0;
+	} else {
+		fprintf(stderr, "Error depacking file\n");
+	}
+
+	return retval;
+}
+
+int main(int argc, char **argv)
+{
+	int retval;
 
 	if (argc<2) {
 		fprintf(stderr, "Usage: %s /path/to/filename.pak\n", argv[0]);
@@ -89,21 +113,8 @@ int main(int argc, char **argv)
 	}
 	atexit(SDL_Quit);
 
-	src = SDL_RWFromFile(argv[1], "rb");
-	if (!src) {
-		fprintf(stderr, "Can not open %s for reading\n", argv[1]);
-		return 1;
-	}
-	pak_depack(src, &dstBuffer, &dstBufLen);
-	SDL_RWclose(src);
+	retval = convert_image(argv[1]);
 
-	if (dstBuffer && dstBufLen) {
-		save_tim(argv[1], dstBuffer, dstBufLen);
-
-		free(dstBuffer);
-	} else {
-		fprintf(stderr, "Error depacking file\n");
-	}
-
-	return 0;
+	SDL_Quit();
+	return retval;
 }
