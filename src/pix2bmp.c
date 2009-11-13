@@ -30,6 +30,13 @@
 
 #include "file_functions.h"
 
+const Uint16 pal_font[16]={
+	0x0000, 0xe77b, 0xdf39, 0xceb5,
+	0x31c2, 0xb5ce, 0xa94a, 0x9ce7,
+	0xa4c6, 0x0000, 0x0000, 0x0000,
+	0x0000, 0x0000, 0x0000, 0x0000
+};
+
 void convert_endianness(Uint16 *src, int length)
 {
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -71,6 +78,8 @@ int convert_image(const char *filename)
 	Uint8 *dstBuffer;
 	int dstBufLen;
 	int width = 0, height = 0, bpp = 8, offset = 0;
+	const Uint16 *palette = NULL;	/* palette to use */
+	int num_pal = 0;	/* colors in palette */
 	SDL_Surface *image;
 
 	src = SDL_RWFromFile(filename, "rb");
@@ -100,6 +109,8 @@ int convert_image(const char *filename)
 		case 7168:
 			width=128;
 			height=56;
+			palette = pal_font;
+			num_pal = 16;
 			break;
 		case 21600:
 			width=40;
@@ -161,6 +172,27 @@ int convert_image(const char *filename)
 
 	image = SDL_CreateRGBSurfaceFrom(&dstBuffer[offset], width, height, bpp, (bpp==8 ? width : width<<1),
 		31,31<<5,31<<10,1<<15);
+
+	/* Set a palette ? */
+	if ((bpp == 8) && palette) {
+		SDL_Color *colors = image->format->palette->colors;
+		int i;
+		for (i=0; i<256; i++) {
+			colors[i].r = 0;
+			colors[i].g = 0;
+			colors[i].b = 0;
+			if (i<num_pal) {
+				int c;
+				c = palette[i] & 31;
+				colors[i].r = (c<<3)|(c>>2);
+				c = (palette[i]>>5) & 31;
+				colors[i].g = (c<<3)|(c>>2);
+				c = (palette[i]>>10) & 31;
+				colors[i].b = (c<<3)|(c>>2);
+			}
+		}
+	}
+
 	if (image) {
 		save_bmp(filename, image);
 
