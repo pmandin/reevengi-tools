@@ -30,46 +30,6 @@
 
 #include "file_functions.h"
 
-void save_bmp(const char *src_filename, SDL_Surface *image)
-{
-	int dst_namelength = strlen(src_filename)+1;
-	char *dst_filename;
-	char *posname, *posext;
-
-	dst_filename = (char *) malloc(dst_namelength);
-	if (!dst_filename) {
-		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
-		return;
-	}
-
-	posname = strrchr(src_filename, '/');
-	if (posname) {
-		++posname;	/* Go after / */
-	} else {
-		posname = strrchr(src_filename, '\\');
-		if (posname) {
-			++posname;	/* Go after \\ */
-		} else {
-			/* No directory in source filename */
-			posname = (char *) src_filename;
-		}
-	}
-	sprintf(dst_filename, "%s", posname);
-
-	posext = strrchr(dst_filename, '.');
-	if (!posext) {
-		strcat(dst_filename, ".bmp");
-	} else {
-		++posext;
-		strcpy(posext, "bmp");
-	}
-
-	printf("Saving to %s\n", dst_filename);
-	SDL_SaveBMP(image, dst_filename);
-
-	free(dst_filename);
-}
-
 void convert_endianness(Uint16 *src, int length)
 {
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN

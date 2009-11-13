@@ -23,4 +23,8 @@
 
 void save_file(const char *filename, void *buffer, int length);
 
+void save_bmp(const char *src_filename, SDL_Surface *image);
+
+void save_tim(const char *src_filename, Uint8 *buffer, int length);
+
 #endif /* FILE_FUNCTIONS_H */
