@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bss2bmp", "bss2bmp.vcproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "adt2img", "adt2img.vcproj", "{86F98909-26FC-44C4-83A3-71E3BDC6CEF9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pix2bmp", "pix2bmp.vcproj", "{A8B670D9-5052-45D6-8095-E065BC60E295}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -25,6 +27,10 @@ Global
 		{86F98909-26FC-44C4-83A3-71E3BDC6CEF9}.Debug|Win32.Build.0 = Debug|Win32
 		{86F98909-26FC-44C4-83A3-71E3BDC6CEF9}.Release|Win32.ActiveCfg = Release|Win32
 		{86F98909-26FC-44C4-83A3-71E3BDC6CEF9}.Release|Win32.Build.0 = Release|Win32
+		{A8B670D9-5052-45D6-8095-E065BC60E295}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A8B670D9-5052-45D6-8095-E065BC60E295}.Debug|Win32.Build.0 = Debug|Win32
+		{A8B670D9-5052-45D6-8095-E065BC60E295}.Release|Win32.ActiveCfg = Release|Win32
+		{A8B670D9-5052-45D6-8095-E065BC60E295}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

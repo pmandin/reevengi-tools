@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="pak2tim"
-	ProjectGUID="{8768E69E-8880-42E9-B19D-5BC588175D7D}"
-	RootNamespace="pak2tim"
+	Name="pix2bmp"
+	ProjectGUID="{A8B670D9-5052-45D6-8095-E065BC60E295}"
+	RootNamespace="pix2bmp"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -179,34 +179,8 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\depack_pak.c"
+				RelativePath="..\src\pix2bmp.c"
 				>
-			</File>
-			<File
-				RelativePath="..\src\file_functions.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\pak2tim.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -219,13 +193,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\depack_pak.h"
-				>
-			</File>
-			<File
 				RelativePath="..\src\file_functions.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Fichiers de ressources"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 		</Filter>
 	</Files>
 	<Globals>
