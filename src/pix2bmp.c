@@ -68,9 +68,9 @@ void convert_alpha(Uint16 *src, int length)
 int convert_image(const char *filename)
 {
 	SDL_RWops *src;
-	Uint16 *dstBuffer;
+	Uint8 *dstBuffer;
 	int dstBufLen;
-	int width = 0, height = 0, bpp = 8;
+	int width = 0, height = 0, bpp = 8, offset = 0;
 	SDL_Surface *image;
 
 	src = SDL_RWFromFile(filename, "rb");
@@ -81,7 +81,7 @@ int convert_image(const char *filename)
 	dstBufLen=SDL_RWseek(src, 0, SEEK_END);
 	SDL_RWseek(src, 0, SEEK_SET);
 
-	dstBuffer = (Uint16 *) malloc(dstBufLen);
+	dstBuffer = (Uint8 *) malloc(dstBufLen);
 	if (dstBuffer) {
 		SDL_RWread(src, dstBuffer, dstBufLen, 1);
 	}
@@ -91,15 +91,11 @@ int convert_image(const char *filename)
 		return 1;
 	}
 
-	convert_endianness(dstBuffer, dstBufLen);
-
-	convert_alpha(dstBuffer, dstBufLen);
-
 	/* Try to guess width, height */
 	switch(dstBufLen) {
 		case 2400:
 			width=40;
-			height=60;
+			height=30*2;
 			break;
 		case 7168:
 			width=128;
@@ -107,19 +103,47 @@ int convert_image(const char *filename)
 			break;
 		case 21600:
 			width=40;
-			height=540;
+			height=30*18;
 			break;
 		case 32768:
 			width=128;
 			height=128;
 			break;
+		case 34848:
+			width=256;
+			height=128;
+			offset = 34848-32768;
+			break;
+		case 85200:
+			width=40;
+			height=30*71;
+			break;
 		case 86400:
 			width=40;
-			height=2160;
+			height=30*72;
 			break;
 		case 153600:
 			width = 320;
 			height = 240;
+			bpp = 16;
+			break;
+		case 230400:
+			width = 320;
+			height = 360;
+			bpp = 16;
+			break;
+		case 274432:
+			width = 40;
+			height = 6860;
+			break;
+		case 1372160:
+			width = 112;
+			height = 512;
+			/*bpp = 16;*/
+			break;
+		case 4888576:
+			width = 40;
+			height = 6860;
 			bpp = 16;
 			break;
 	}
@@ -130,7 +154,12 @@ int convert_image(const char *filename)
 		return 1;
 	}
 
-	image = SDL_CreateRGBSurfaceFrom(dstBuffer, width, height, bpp, (bpp==8 ? width : width<<1),
+	if (bpp == 16) {
+		convert_endianness((Uint16 *) (&dstBuffer[offset]), dstBufLen);
+		convert_alpha((Uint16 *) (&dstBuffer[offset]), dstBufLen);
+	}
+
+	image = SDL_CreateRGBSurfaceFrom(&dstBuffer[offset], width, height, bpp, (bpp==8 ? width : width<<1),
 		31,31<<5,31<<10,1<<15);
 	if (image) {
 		save_bmp(filename, image);
