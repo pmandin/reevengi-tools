@@ -118,3 +118,43 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 
 	free(dst_filename);
 }
+
+void save_pak(const char *src_filename, Uint8 *buffer, int length)
+{
+	int dst_namelength = strlen(src_filename)+1;
+	char *dst_filename;
+	char *posname, *posext;
+
+	dst_filename = (char *) malloc(dst_namelength);
+	if (!dst_filename) {
+		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
+		return;
+	}
+
+	posname = strrchr(src_filename, '/');
+	if (posname) {
+		++posname;	/* Go after / */
+	} else {
+		posname = strrchr(src_filename, '\\');
+		if (posname) {
+			++posname;	/* Go after \\ */
+		} else {
+			/* No directory in source filename */
+			posname = (char *) src_filename;
+		}
+	}
+	sprintf(dst_filename, "%s", posname);
+
+	posext = strrchr(dst_filename, '.');
+	if (!posext) {
+		strcat(dst_filename, ".pak");
+	} else {
+		++posext;
+		strcpy(posext, "pak");
+	}
+
+	printf("Saving to %s\n", dst_filename);
+	save_file(dst_filename, buffer, length);
+
+	free(dst_filename);
+}

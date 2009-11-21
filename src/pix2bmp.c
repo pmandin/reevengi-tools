@@ -109,14 +109,14 @@ int convert_image(const char *filename)
 		case 7168:
 			width=128;
 			height=56;
-			palette = pal_font;
-			num_pal = 16;
+			/*palette = pal_font;
+			num_pal = 16;*/
 			break;
 		case 21600:
 			width=40;
 			height=30*18;
 			break;
-		case 32768:
+/*		case 32768:
 			width=128;
 			height=128;
 			break;
@@ -128,7 +128,7 @@ int convert_image(const char *filename)
 		case 85200:
 			width=40;
 			height=30*71;
-			break;
+			break;*/
 		case 86400:
 			width=40;
 			height=30*72;
@@ -138,7 +138,7 @@ int convert_image(const char *filename)
 			height = 240;
 			bpp = 16;
 			break;
-		case 230400:
+/*		case 230400:
 			width = 320;
 			height = 360;
 			bpp = 16;
@@ -150,13 +150,12 @@ int convert_image(const char *filename)
 		case 1372160:
 			width = 112;
 			height = 512;
-			/*bpp = 16;*/
 			break;
 		case 4888576:
 			width = 40;
 			height = 6860;
 			bpp = 16;
-			break;
+			break;*/
 	}
 
 	if ((width==0) || (height==0)) {

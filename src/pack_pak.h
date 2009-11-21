@@ -1,7 +1,7 @@
 /*
-	File loader/saver
+	PAK file packer
 
-	Copyright (C) 2009	Patrice Mandin
+	Copyright (C) 2007	Patrice Mandin
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,15 +18,9 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef FILE_FUNCTIONS_H
-#define FILE_FUNCTIONS_H 1
+#ifndef PACK_PAK_H
+#define PACK_PAK_H
 
-void save_file(const char *filename, void *buffer, int length);
+void pak_pack(SDL_RWops *src, Uint8 **dstPointer, int *dstLength);
 
-void save_bmp(const char *src_filename, SDL_Surface *image);
-
-void save_tim(const char *src_filename, Uint8 *buffer, int length);
-
-void save_pak(const char *src_filename, Uint8 *buffer, int length);
-
-#endif /* FILE_FUNCTIONS_H */
+#endif /* PACK_PAK_H */
