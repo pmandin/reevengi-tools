@@ -49,7 +49,7 @@ int convert_image(const char *filename)
 	if (dstBuffer && dstBufLen) {
 		if (dstBufLen == 320*256*2) {
 			/* Raw image, save as BMP */
-			SDL_Surface *image = adt_surface((Uint16 *) dstBuffer);
+			SDL_Surface *image = adt_surface((Uint16 *) dstBuffer, 1);
 			if (image) {
 				save_bmp(filename, image);
 				SDL_FreeSurface(image);

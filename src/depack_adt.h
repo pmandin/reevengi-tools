@@ -21,8 +21,21 @@
 #ifndef DEPACK_ADT_H
 #define DEPACK_ADT_H
 
+/*
+	Depack an ADT file
+
+	src		Source file
+	dstPointer	Pointer to depacked file buffer (NULL if failed)
+	dstLength	Length of depacked file (0 if failed)
+*/
 void adt_depack(SDL_RWops *src, Uint8 **dstPointer, int *dstLength);
 
-SDL_Surface *adt_surface(Uint16 *source);
+/*
+	Create a SDL_Surface, for a depacked ADT file
+	source		Pointer to depacked file
+	reorganize	0: keep buffer as is
+			1: buffer is organized with 256x256 block first, then 2 64x128
+*/
+SDL_Surface *adt_surface(Uint16 *source, int reorganize);
 
 #endif /* DEPACK_ADT_H */

@@ -430,7 +430,7 @@ void adt_depack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 	*dstBufPtr = dstPointer;
 }
 
-SDL_Surface *adt_surface(Uint16 *source)
+SDL_Surface *adt_surface(Uint16 *source, int reorganize)
 {
 	SDL_Surface *surface;
 	Uint16 *surface_line, *src_line;
@@ -441,47 +441,60 @@ SDL_Surface *adt_surface(Uint16 *source)
 		return NULL;
 	}
 
-	/* First 256x256 block */
-	surface_line = (Uint16 *) surface->pixels;
-	src_line = source;
-	for (y=0; y<240; y++) {
-		Uint16 *surface_col = surface_line;
-		for (x=0; x<256; x++) {
-			Uint16 col = *src_line++;
-			*surface_col++ = SDL_SwapLE16(col);
-		}
-		surface_line += 320;
-	}
-
-	/* Then 2x64x128 inside 128x128 */
-	surface_line = (Uint16 *) surface->pixels;
-	surface_line += 256;
-	src_line = &source[256*256];
-	for (y=0; y<128; y++) {
-		Uint16 *surface_col = surface_line;
-		Uint16 *src_col = src_line;
-		for (x=0; x<64; x++) {
-			Uint16 col = *src_col++;
-			*surface_col++ = SDL_SwapLE16(col);
+	if (reorganize) {
+		/* First 256x256 block */
+		surface_line = (Uint16 *) surface->pixels;
+		src_line = source;
+		for (y=0; y<240; y++) {
+			Uint16 *surface_col = surface_line;
+			for (x=0; x<256; x++) {
+				Uint16 col = *src_line++;
+				*surface_col++ = SDL_SwapLE16(col);
+			}
+			surface_line += 320;
 		}
 
-		surface_line += 320;
-		src_line += 128;
-	}
+		/* Then 2x64x128 inside 128x128 */
+		surface_line = (Uint16 *) surface->pixels;
+		surface_line += 256;
+		src_line = &source[256*256];
+		for (y=0; y<128; y++) {
+			Uint16 *surface_col = surface_line;
+			Uint16 *src_col = src_line;
+			for (x=0; x<64; x++) {
+				Uint16 col = *src_col++;
+				*surface_col++ = SDL_SwapLE16(col);
+			}
 
-	surface_line = (Uint16 *) surface->pixels;
-	surface_line += (320*128)+256;
-	src_line = &source[256*256+64];
-	for (y=0; y<240-128; y++) {
-		Uint16 *surface_col = surface_line;
-		Uint16 *src_col = src_line;
-		for (x=0; x<64; x++) {
-			Uint16 col = *src_col++;
-			*surface_col++ = SDL_SwapLE16(col);
+			surface_line += 320;
+			src_line += 128;
 		}
 
-		surface_line += 320;
-		src_line += 128;
+		surface_line = (Uint16 *) surface->pixels;
+		surface_line += (320*128)+256;
+		src_line = &source[256*256+64];
+		for (y=0; y<240-128; y++) {
+			Uint16 *surface_col = surface_line;
+			Uint16 *src_col = src_line;
+			for (x=0; x<64; x++) {
+				Uint16 col = *src_col++;
+				*surface_col++ = SDL_SwapLE16(col);
+			}
+
+			surface_line += 320;
+			src_line += 128;
+		}
+	} else {
+		surface_line = (Uint16 *) surface->pixels;
+		src_line = source;
+		for (y=0; y<240; y++) {
+			Uint16 *surface_col = surface_line;
+			for (x=0; x<320; x++) {
+				Uint16 col = *src_line++;
+				*surface_col++ = SDL_SwapLE16(col);
+			}
+			surface_line += surface->pitch>>1;
+		}
 	}
 
 	return surface;
