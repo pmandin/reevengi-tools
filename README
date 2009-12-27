@@ -32,6 +32,15 @@ bss2bmp:	Depack PS1 BSS image files.
 pak2tim:	Depack Resident Evil PC PAK image files.
 		The result is saved to a TIM image.
 
+pix2bmp:	Convert Resident Evil PC PIX image files.
+		The result is saved to a BMP image.
+
+ptc2bmp:	Convert Resident Evil PC PTC image files.
+		The result is saved to a BMP image.
+
+rgb2bmp:	Convert Resident Evil PS1 RGB image files.
+		The result is saved to a BMP image.
+
 -- 
 Patrice Mandin <patmandin@gmail.com>
 Web: http://pmandin.atari.org/

@@ -1,3 +1,8 @@
+v 0.3
+
+- Add converters from PIX to BMP, PTC to BMP, RGB to BMP.
+
+
 v 0.2
 
 - Added depacker for BSS and ADT image files.

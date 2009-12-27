@@ -1,6 +1,6 @@
-v 0.2
+v 0.3
 
-- Added depacker for BSS and ADT image files.
+- Add converters from PIX to BMP, and PTC to BMP.
 
 
 See ChangeLog for older changes.
