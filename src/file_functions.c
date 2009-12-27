@@ -24,6 +24,43 @@
 
 #include <SDL.h>
 
+static char *get_filename_ext(const char *src_filename, const char *new_ext)
+{
+	int dst_namelength = strlen(src_filename)+1;
+	char *dst_filename;
+	char *posname, *posext;
+
+	dst_filename = (char *) malloc(dst_namelength);
+	if (!dst_filename) {
+		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
+		return NULL;
+	}
+
+	posname = strrchr(src_filename, '/');
+	if (posname) {
+		++posname;	/* Go after / */
+	} else {
+		posname = strrchr(src_filename, '\\');
+		if (posname) {
+			++posname;	/* Go after \\ */
+		} else {
+			/* No directory in source filename */
+			posname = (char *) src_filename;
+		}
+	}
+	sprintf(dst_filename, "%s", posname);
+
+	posext = strrchr(dst_filename, '.');
+	if (!posext) {
+		strcat(dst_filename, new_ext);
+	} else {
+		++posext;
+		strcpy(posext, new_ext);
+	}
+
+	return dst_filename;
+}
+
 void save_file(const char *filename, void *buffer, int length)
 {
 	SDL_RWops *dst;
@@ -41,36 +78,11 @@ void save_file(const char *filename, void *buffer, int length)
 
 void save_bmp(const char *src_filename, SDL_Surface *image)
 {
-	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
-	char *posname, *posext;
-
-	dst_filename = (char *) malloc(dst_namelength);
+	
+	dst_filename = get_filename_ext(src_filename, ".bmp");
 	if (!dst_filename) {
-		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
 		return;
-	}
-
-	posname = strrchr(src_filename, '/');
-	if (posname) {
-		++posname;	/* Go after / */
-	} else {
-		posname = strrchr(src_filename, '\\');
-		if (posname) {
-			++posname;	/* Go after \\ */
-		} else {
-			/* No directory in source filename */
-			posname = (char *) src_filename;
-		}
-	}
-	sprintf(dst_filename, "%s", posname);
-
-	posext = strrchr(dst_filename, '.');
-	if (!posext) {
-		strcat(dst_filename, ".bmp");
-	} else {
-		++posext;
-		strcpy(posext, "bmp");
 	}
 
 	printf("Saving to %s\n", dst_filename);
@@ -81,36 +93,11 @@ void save_bmp(const char *src_filename, SDL_Surface *image)
 
 void save_tim(const char *src_filename, Uint8 *buffer, int length)
 {
-	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
-	char *posname, *posext;
 
-	dst_filename = (char *) malloc(dst_namelength);
+	dst_filename = get_filename_ext(src_filename, ".tim");
 	if (!dst_filename) {
-		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
 		return;
-	}
-
-	posname = strrchr(src_filename, '/');
-	if (posname) {
-		++posname;	/* Go after / */
-	} else {
-		posname = strrchr(src_filename, '\\');
-		if (posname) {
-			++posname;	/* Go after \\ */
-		} else {
-			/* No directory in source filename */
-			posname = (char *) src_filename;
-		}
-	}
-	sprintf(dst_filename, "%s", posname);
-
-	posext = strrchr(dst_filename, '.');
-	if (!posext) {
-		strcat(dst_filename, ".tim");
-	} else {
-		++posext;
-		strcpy(posext, "tim");
 	}
 
 	printf("Saving to %s\n", dst_filename);
@@ -121,36 +108,11 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length)
 
 void save_pak(const char *src_filename, Uint8 *buffer, int length)
 {
-	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;
-	char *posname, *posext;
 
-	dst_filename = (char *) malloc(dst_namelength);
+	dst_filename = get_filename_ext(src_filename, ".pak");
 	if (!dst_filename) {
-		fprintf(stderr, "Can not allocate %d bytes\n", dst_namelength);
 		return;
-	}
-
-	posname = strrchr(src_filename, '/');
-	if (posname) {
-		++posname;	/* Go after / */
-	} else {
-		posname = strrchr(src_filename, '\\');
-		if (posname) {
-			++posname;	/* Go after \\ */
-		} else {
-			/* No directory in source filename */
-			posname = (char *) src_filename;
-		}
-	}
-	sprintf(dst_filename, "%s", posname);
-
-	posext = strrchr(dst_filename, '.');
-	if (!posext) {
-		strcat(dst_filename, ".pak");
-	} else {
-		++posext;
-		strcpy(posext, "pak");
 	}
 
 	printf("Saving to %s\n", dst_filename);
