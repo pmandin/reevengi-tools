@@ -54,7 +54,6 @@ static char *get_filename_ext(const char *src_filename, const char *new_ext)
 	if (!posext) {
 		strcat(dst_filename, new_ext);
 	} else {
-		++posext;
 		strcpy(posext, new_ext);
 	}
 
@@ -111,6 +110,21 @@ void save_pak(const char *src_filename, Uint8 *buffer, int length)
 	char *dst_filename;
 
 	dst_filename = get_filename_ext(src_filename, ".pak");
+	if (!dst_filename) {
+		return;
+	}
+
+	printf("Saving to %s\n", dst_filename);
+	save_file(dst_filename, buffer, length);
+
+	free(dst_filename);
+}
+
+void save_raw(const char *src_filename, Uint8 *buffer, int length)
+{
+	char *dst_filename;
+
+	dst_filename = get_filename_ext(src_filename, ".raw");
 	if (!dst_filename) {
 		return;
 	}

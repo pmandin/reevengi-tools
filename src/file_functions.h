@@ -29,4 +29,6 @@ void save_tim(const char *src_filename, Uint8 *buffer, int length);
 
 void save_pak(const char *src_filename, Uint8 *buffer, int length);
 
+void save_raw(const char *src_filename, Uint8 *buffer, int length);
+
 #endif /* FILE_FUNCTIONS_H */
