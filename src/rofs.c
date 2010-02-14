@@ -86,6 +86,8 @@ const unsigned short base_array[64]={
 
 Uint8 rofs_header[4096];
 
+Uint8 tmp4k[4096+256];
+
 /*--- Function prototypes ---*/
 
 void create_dirs(const char *level1, const char *level2);
@@ -95,6 +97,8 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 
 Uint8 re3_next_key(Uint32 *key);
 void decrypt_block(Uint8 *src, Uint32 key, Uint32 length);
+
+Uint32 depack_block(Uint8 *src, Uint32 length);
 
 /*--- Functions ---*/
 
@@ -222,12 +226,6 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 		crypt_hdr.ident[i] ^= crypt_hdr.ident[7];
 	}
 	compressed = (strcmp("Hi_Comp", crypt_hdr.ident)==0);
-	if (compressed) {
-		fprintf(stderr, "Compressed file not supported\n");
-		return;
-	}
-
-	printf("Extracting %s...\n", filename);
 
 	/* Read decryption keys */
 	array_keys = calloc(SDL_SwapLE16(crypt_hdr.num_keys)*2, sizeof(Uint32));
@@ -246,17 +244,24 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 	SDL_RWseek(src, offset, RW_SEEK_SET);
 
 	dstBufLen = SDL_SwapLE32(crypt_hdr.length);
-	dstBuffer = malloc(dstBufLen);
+	dstBuffer = malloc(dstBufLen+16);
 	if (!dstBuffer) {
 		fprintf(stderr, "Can not allocate memory for file\n");
 		free(array_keys);
 		return;
 	}
 
+	printf("Extracting %s, length %d...\n", filename, dstBufLen);
+
 	offset = 0;
 	for (i=0; i<SDL_SwapLE16(crypt_hdr.num_keys); i++) {
 		Uint32 block_length = array_length[i];
 
+		if (offset+block_length>dstBufLen) {
+			block_length = dstBufLen-offset;
+		}
+
+		/*printf(" Reading at offset %d, len %d (finish %d)\n", offset,block_length,offset+block_length);*/
 		SDL_RWread(src, &dstBuffer[offset], block_length, 1);
 
 		/* Decrypt */
@@ -264,13 +269,12 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 
 		/* Depack */
 		if (compressed) {
-			/* TODO */
+			block_length = depack_block(&dstBuffer[offset], block_length);
 		}
 
 		offset += block_length;
 	}
 
-	/*printf("Saving file %s\n", filename);*/
 	save_file(filename, dstBuffer, dstBufLen);
  
 	free(dstBuffer);
@@ -303,4 +307,69 @@ void decrypt_block(Uint8 *src, Uint32 key, Uint32 length)
 		src[i] ^= xor_key;
 		block_index++;
 	}
+}
+
+Uint32 depack_block(Uint8 *dst, Uint32 length)
+{
+	int srcNumBit, srcIndex, tmpIndex, dstIndex;
+	int i, value, value2, tmpStart, tmpLength;
+	Uint8 *src;
+
+	for (i=0; i<256; i++) {
+ 		memset(&tmp4k[i*16], i, 16); 
+	}
+	memset(&tmp4k[4096], 0, 256);
+
+	/* Copy source to a temp copy */
+	src = (Uint8 *) malloc(length);
+	if (!src) {
+		fprintf(stderr, "Can not allocate memory for depacking\n");
+		return length;
+	}
+	memcpy(src, dst, length);
+
+	/*printf("Depacking %08x to %08x, len %d\n", src,dst,length);*/
+
+	srcNumBit = 0;
+	srcIndex = 0;
+	tmpIndex = 0;
+	dstIndex = 0;
+	while (srcIndex<length) {
+		srcNumBit++;
+
+		value = src[srcIndex++] << srcNumBit;
+		value |= src[srcIndex] >> (8-srcNumBit);
+
+		if (srcNumBit==8) {
+			srcIndex++;
+			srcNumBit = 0;
+		}
+
+		if ((value & (1<<8))==0) {
+			dst[dstIndex++] = tmp4k[tmpIndex++] = value;
+		} else {
+			value2 = (src[srcIndex++] << srcNumBit) & 0xff;
+			value2 |= src[srcIndex] >> (8-srcNumBit);
+
+			tmpLength = (value2 & 0x0f)+2;
+
+			tmpStart = (value2 >> 4) & 0xfff;
+			tmpStart |= (value & 0xff) << 4;
+
+			memcpy(&dst[dstIndex], &tmp4k[tmpStart], tmpLength);
+			memcpy(&tmp4k[tmpIndex], &dst[dstIndex], tmpLength);
+
+			dstIndex += tmpLength;
+			tmpIndex += tmpLength;
+		}
+
+		if (tmpIndex>=4096) {
+			tmpIndex = 0;
+		}
+	}
+
+	/*printf("Depacked to %d len\n", dstIndex-1);*/
+
+	free(src);
+	return dstIndex-1;
 }
