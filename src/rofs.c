@@ -67,6 +67,7 @@ Uint8 rofs_header[4096];
 /*--- Function prototypes ---*/
 
 void list_files(const char *filename);
+void extract_file(const char *filename, rofs_file_header_t *file_hdr);
 
 /*--- Functions ---*/
 
@@ -141,7 +142,8 @@ void list_files(const char *filename)
 		file_hdr.offset = SDL_SwapLE32(file_hdr.offset) * 8;
 
 		/* Read file name */
-		j = 0;
+		sprintf(filename, "%s/%s/", dir_level1_name, dir_level2_name);
+		j = strlen(filename);
 		for (;;) {
 			SDL_RWread(src, &filename[j], 1,1);
 			if (filename[j] == 0) {
@@ -151,10 +153,15 @@ void list_files(const char *filename)
 		}
 
 		/*printf(" file %d: %s\n", i, filename);*/
-		printf("0x%08x\t0x%08x\t%s/%s/%s\n",
-			file_hdr.offset, file_hdr.length,
-			dir_level1_name, dir_level2_name, filename);
+		printf("0x%08x\t0x%08x\t%s\n",
+			file_hdr.offset, file_hdr.length, filename);
+
+		extract_file(filename, &file_hdr);
 	}
 
 	SDL_RWclose(src);
+}
+
+void extract_file(const char *filename, rofs_file_header_t *file_hdr)
+{
 }
