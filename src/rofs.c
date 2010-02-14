@@ -338,7 +338,9 @@ Uint32 depack_block(Uint8 *dst, Uint32 length)
 		srcNumBit++;
 
 		value = src[srcIndex++] << srcNumBit;
-		value |= src[srcIndex] >> (8-srcNumBit);
+		if (srcIndex<length) {
+			value |= src[srcIndex] >> (8-srcNumBit);
+		}
 
 		if (srcNumBit==8) {
 			srcIndex++;
