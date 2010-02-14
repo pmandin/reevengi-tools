@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -45,20 +46,41 @@ typedef struct {
 	Uint32 offset;
 	Uint32 length;
 	/*Uint8 *dirname[];*/
-} rofs_dir_level2_t;
+} __attribute__((packed)) rofs_dir_level2_t;
 
 typedef struct {
 	Uint32 offset;
 	Uint32 length;
 	/*Uint8 *filename[];*/
-} rofs_file_header_t;
+} __attribute__((packed)) rofs_file_header_t;
 
 typedef struct {
 	Uint16 offset;
 	Uint16 num_keys;
 	Uint32 length;
-	Uint8 ident;
-} rofs_crypt_header_t;
+	Uint8 ident[8];
+} __attribute__((packed)) rofs_crypt_header_t;
+
+/*--- Const ---*/
+
+const unsigned short base_array[64]={
+	0x00e6, 0x01a4, 0x00e6, 0x01c5,
+	0x0130, 0x00e8, 0x03db, 0x008b,
+	0x0141, 0x018e, 0x03ae, 0x0139,
+	0x00f0, 0x027a, 0x02c9, 0x01b0,
+	0x01f7, 0x0081, 0x0138, 0x0285,
+	0x025a, 0x015b, 0x030f, 0x0335,
+	0x02e4, 0x01f6, 0x0143, 0x00d1,
+	0x0337, 0x0385, 0x007b, 0x00c6,
+	0x0335, 0x0141, 0x0186, 0x02a1,
+	0x024d, 0x0342, 0x01fb, 0x03e5,
+	0x01b0, 0x006d, 0x0140, 0x00c0,
+	0x0386, 0x016b, 0x020b, 0x009a,
+	0x0241, 0x00de, 0x015e, 0x035a,
+	0x025b, 0x0154, 0x0068, 0x02e8,
+	0x0321, 0x0071, 0x01b0, 0x0232,
+	0x02d9, 0x0263, 0x0164, 0x0290
+};
 
 /*--- Variables ---*/
 
@@ -66,8 +88,13 @@ Uint8 rofs_header[4096];
 
 /*--- Function prototypes ---*/
 
+void create_dirs(const char *level1, const char *level2);
+
 void list_files(const char *filename);
-void extract_file(const char *filename, rofs_file_header_t *file_hdr);
+void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file_hdr);
+
+Uint8 re3_next_key(Uint32 *key);
+void decrypt_block(Uint8 *src, Uint32 key, Uint32 length);
 
 /*--- Functions ---*/
 
@@ -90,6 +117,16 @@ int main(int argc, char **argv)
 
 	SDL_Quit();
 	return retval;
+}
+
+void create_dirs(const char *level1, const char *level2)
+{
+	char filename[512];
+
+	mkdir(level1, 0755);
+
+	sprintf(filename, "%s/%s", level1, level2);
+	mkdir(filename, 0755);
 }
 
 void list_files(const char *filename)
@@ -121,20 +158,25 @@ void list_files(const char *filename)
 	dir_level2_name = &rofs_header[offset];
 	/*printf("level2 dir: %s\n", dir_level2_name);*/
 
+	create_dirs(dir_level1_name, dir_level2_name);
+
 	offset = SDL_SwapLE32(dir_level2.offset)*8;
 	SDL_RWseek(src, offset, RW_SEEK_SET);
 
 	/* Number of files */
 	SDL_RWread(src, &num_files, 4, 1);
 	num_files = SDL_SwapLE32(num_files);
+	offset = SDL_RWtell(src);
 
 	/*printf("files: %d\n", num_files);*/
 
-	printf("Offset\t\tLength\t\tName\n");
+	/*printf("Offset\t\tLength\t\tName\n");*/
 	for (i=0; i<num_files; i++) {
 		rofs_file_header_t file_hdr;
 		char filename[512];
 		int j;
+
+		SDL_RWseek(src, offset, RW_SEEK_SET);
 
 		/* Read file header */
 		SDL_RWread(src, &file_hdr, sizeof(file_hdr), 1);
@@ -152,16 +194,113 @@ void list_files(const char *filename)
 			j++;
 		}
 
-		/*printf(" file %d: %s\n", i, filename);*/
-		printf("0x%08x\t0x%08x\t%s\n",
-			file_hdr.offset, file_hdr.length, filename);
+		offset = SDL_RWtell(src);
 
-		extract_file(filename, &file_hdr);
+		/*printf(" file %d: %s\n", i, filename);*/
+		/*printf("0x%08x\t0x%08x\t%s\n",
+			file_hdr.offset, file_hdr.length, filename);*/
+
+		extract_file(src, filename, &file_hdr);
 	}
 
 	SDL_RWclose(src);
 }
 
-void extract_file(const char *filename, rofs_file_header_t *file_hdr)
+void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file_hdr)
 {
+	rofs_crypt_header_t crypt_hdr;
+	int i, compressed;
+	Uint32 *array_keys, *array_length;
+	Uint32 offset, dstBufLen;
+	Uint8 *dstBuffer;
+
+	SDL_RWseek(src, file_hdr->offset, RW_SEEK_SET);
+	offset = SDL_RWtell(src);
+	SDL_RWread(src, &crypt_hdr, sizeof(rofs_crypt_header_t), 1);
+
+	for (i=0; i<8; i++) {
+		crypt_hdr.ident[i] ^= crypt_hdr.ident[7];
+	}
+	compressed = (strcmp("Hi_Comp", crypt_hdr.ident)==0);
+	if (compressed) {
+		fprintf(stderr, "Compressed file not supported\n");
+		return;
+	}
+
+	printf("Extracting %s...\n", filename);
+
+	/* Read decryption keys */
+	array_keys = calloc(SDL_SwapLE16(crypt_hdr.num_keys)*2, sizeof(Uint32));
+	if (!array_keys) {
+		fprintf(stderr, "Can not allocate memory for keys\n");
+		return;
+	}
+	array_length = &array_keys[SDL_SwapLE16(crypt_hdr.num_keys)];
+	SDL_RWread(src, array_keys, SDL_SwapLE16(crypt_hdr.num_keys)*2, sizeof(Uint32));
+	for (i=0; i<SDL_SwapLE16(crypt_hdr.num_keys)*2; i++) {
+		array_keys[i] = SDL_SwapLE32(array_keys[i]);
+	}
+
+	/* Go to start of file */
+	offset += SDL_SwapLE16(crypt_hdr.offset);
+	SDL_RWseek(src, offset, RW_SEEK_SET);
+
+	dstBufLen = SDL_SwapLE32(crypt_hdr.length);
+	dstBuffer = malloc(dstBufLen);
+	if (!dstBuffer) {
+		fprintf(stderr, "Can not allocate memory for file\n");
+		free(array_keys);
+		return;
+	}
+
+	offset = 0;
+	for (i=0; i<SDL_SwapLE16(crypt_hdr.num_keys); i++) {
+		Uint32 block_length = array_length[i];
+
+		SDL_RWread(src, &dstBuffer[offset], block_length, 1);
+
+		/* Decrypt */
+		decrypt_block(&dstBuffer[offset], array_keys[i], block_length);
+
+		/* Depack */
+		if (compressed) {
+			/* TODO */
+		}
+
+		offset += block_length;
+	}
+
+	/*printf("Saving file %s\n", filename);*/
+	save_file(filename, dstBuffer, dstBufLen);
+ 
+	free(dstBuffer);
+	free(array_keys);
+}
+
+Uint8 re3_next_key(Uint32 *key)
+{
+	*key *= 0x5d588b65;
+	*key += 0x8000000b;
+
+	return (*key >> 24);
+}
+
+void decrypt_block(Uint8 *src, Uint32 key, Uint32 length)
+{
+	Uint8 xor_key, base_index;
+	int i, block_index;
+
+	xor_key = re3_next_key(&key);
+	base_index = re3_next_key(&key) % 0x3f;
+
+	block_index = 0;
+	for (i=0; i<length; i++) {
+		if (block_index>base_array[base_index]) {
+			base_index = re3_next_key(&key) % 0x3f;
+			xor_key = re3_next_key(&key);
+			block_index = 0;
+		}
+		src[i] ^= xor_key;
+		block_index++;
+	}
 }

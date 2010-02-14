@@ -29,7 +29,7 @@ tim2pak_SOURCES = tim2pak.c file_functions.c pack_pak.c
 
 tim2pak_headers = pack_pak.h
 
-rofs_SOURCES = rofs.c
+rofs_SOURCES = rofs.c file_functions.c
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers)
