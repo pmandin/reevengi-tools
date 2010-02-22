@@ -1,6 +1,7 @@
 v 0.3
 
-- Add converters from PIX to BMP, and PTC to BMP.
+- Add converters from PIX to BMP, PTC to BMP, RGB to BMP.
+- Add depackers for RE3 ROFS and SLD archives.
 
 
 See ChangeLog for older changes.

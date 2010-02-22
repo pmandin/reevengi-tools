@@ -41,6 +41,12 @@ ptc2bmp:	Convert Resident Evil PC PTC image files.
 rgb2bmp:	Convert Resident Evil PS1 RGB image files.
 		The result is saved to a BMP image.
 
+rofs:		Extract files from Resident Evil 3 PC ROFSxx.DAT archives.
+		Filed are depacked in current directory.
+
+sld:		Extract files from Resident Evil 3 PC Rxxx.SLD archives.
+		Filed are depacked in current directory as TIMxx.TIM images.
+
 -- 
 Patrice Mandin <patmandin@gmail.com>
 Web: http://pmandin.atari.org/
