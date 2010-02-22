@@ -1,4 +1,4 @@
-bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp ptc2bmp rgb2bmp tim2pak rofs
+bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp ptc2bmp rgb2bmp rofs
 
 AM_CFLAGS = $(SDL_CFLAGS)
 
@@ -25,9 +25,9 @@ ptc2bmp_SOURCES = ptc2bmp.c file_functions.c
 
 rgb2bmp_SOURCES = rgb2bmp.c file_functions.c
 
-tim2pak_SOURCES = tim2pak.c file_functions.c pack_pak.c
+#tim2pak_SOURCES = tim2pak.c file_functions.c pack_pak.c
 
-tim2pak_headers = pack_pak.h
+#tim2pak_headers = pack_pak.h
 
 rofs_SOURCES = rofs.c file_functions.c
 

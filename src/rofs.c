@@ -34,9 +34,8 @@
 /*--- Types ---*/
 
 typedef struct {
-	Uint32 unknown0[5];
-	Uint8 unknown1;
-} __attribute__((packed)) rofs_header_t;
+	Uint8 unknown[4*5+1];
+} rofs_header_t;
 
 /*typedef struct {
 	Uint8 *dirname[];
@@ -46,20 +45,20 @@ typedef struct {
 	Uint32 offset;
 	Uint32 length;
 	/*Uint8 *dirname[];*/
-} __attribute__((packed)) rofs_dir_level2_t;
+} rofs_dir_level2_t;
 
 typedef struct {
 	Uint32 offset;
 	Uint32 length;
 	/*Uint8 *filename[];*/
-} __attribute__((packed)) rofs_file_header_t;
+} rofs_file_header_t;
 
 typedef struct {
 	Uint16 offset;
 	Uint16 num_keys;
 	Uint32 length;
 	Uint8 ident[8];
-} __attribute__((packed)) rofs_crypt_header_t;
+} rofs_crypt_header_t;
 
 /*--- Const ---*/
 
