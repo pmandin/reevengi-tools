@@ -103,8 +103,6 @@ Uint32 depack_block(Uint8 *src, Uint32 length);
 
 int main(int argc, char **argv)
 {
-	int retval;
-
 	if (argc<2) {
 		fprintf(stderr, "Usage: %s /path/to/rofs.dat\n", argv[0]);
 		return 1;
@@ -119,7 +117,7 @@ int main(int argc, char **argv)
 	list_files(argv[1]);
 
 	SDL_Quit();
-	return retval;
+	return 0;
 }
 
 void create_dirs(const char *level1, const char *level2)

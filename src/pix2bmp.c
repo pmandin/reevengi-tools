@@ -138,12 +138,12 @@ int convert_image(const char *filename)
 			height = 240;
 			bpp = 16;
 			break;
-/*		case 230400:
+		case 230400:
 			width = 320;
 			height = 360;
 			bpp = 16;
 			break;
-		case 274432:
+/*		case 274432:
 			width = 40;
 			height = 6860;
 			break;

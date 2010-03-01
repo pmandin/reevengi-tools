@@ -51,8 +51,6 @@ void list_files(const char *filename);
 
 int main(int argc, char **argv)
 {
-	int retval;
-
 	if (argc<2) {
 		fprintf(stderr, "Usage: %s /path/to/file.sld\n", argv[0]);
 		return 1;
@@ -67,7 +65,7 @@ int main(int argc, char **argv)
 	list_files(argv[1]);
 
 	SDL_Quit();
-	return retval;
+	return 0;
 }
 
 void list_files(const char *filename)
@@ -103,7 +101,7 @@ void list_files(const char *filename)
 				free(dstBuffer);
 			}
 		} else {
-			printf("File %d is empty\n");
+			printf("File %d is empty\n", i);
 			fileLen = 8;
 		}
 
