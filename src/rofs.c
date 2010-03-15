@@ -97,7 +97,7 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 Uint8 re3_next_key(Uint32 *key);
 void decrypt_block(Uint8 *src, Uint32 key, Uint32 length);
 
-Uint32 depack_block(Uint8 *src, Uint32 length);
+void depack_block(Uint8 *src, Uint32 srcLength, Uint32 *dstLength);
 
 /*--- Functions ---*/
 
@@ -266,7 +266,11 @@ void extract_file(SDL_RWops *src, const char *filename, rofs_file_header_t *file
 
 		/* Depack */
 		if (compressed) {
-			block_length = depack_block(&dstBuffer[offset], block_length);
+			Uint32 dstBlock = 32768;
+			depack_block(&dstBuffer[offset], block_length, &dstBlock);
+			if (dstBlock!=0) {
+				block_length = dstBlock;
+			}
 		}
 
 		offset += block_length;
@@ -306,7 +310,7 @@ void decrypt_block(Uint8 *src, Uint32 key, Uint32 length)
 	}
 }
 
-Uint32 depack_block(Uint8 *dst, Uint32 length)
+void depack_block(Uint8 *dst, Uint32 srcLength, Uint32 *dstLength)
 {
 	int srcNumBit, srcIndex, tmpIndex, dstIndex;
 	int i, value, value2, tmpStart, tmpLength;
@@ -318,12 +322,13 @@ Uint32 depack_block(Uint8 *dst, Uint32 length)
 	memset(&tmp4k[4096], 0, 256);
 
 	/* Copy source to a temp copy */
-	src = (Uint8 *) malloc(length);
+	src = (Uint8 *) malloc(srcLength);
 	if (!src) {
 		fprintf(stderr, "Can not allocate memory for depacking\n");
-		return length;
+		*dstLength = 0;
+		return;
 	}
-	memcpy(src, dst, length);
+	memcpy(src, dst, srcLength);
 
 	/*printf("Depacking %08x to %08x, len %d\n", src,dst,length);*/
 
@@ -331,11 +336,11 @@ Uint32 depack_block(Uint8 *dst, Uint32 length)
 	srcIndex = 0;
 	tmpIndex = 0;
 	dstIndex = 0;
-	while (srcIndex<length) {
+	while ((srcIndex<srcLength) && (dstIndex<*dstLength)) {
 		srcNumBit++;
 
 		value = src[srcIndex++] << srcNumBit;
-		if (srcIndex<length) {
+		if (srcIndex<srcLength) {
 			value |= src[srcIndex] >> (8-srcNumBit);
 		}
 
@@ -355,6 +360,10 @@ Uint32 depack_block(Uint8 *dst, Uint32 length)
 			tmpStart = (value2 >> 4) & 0xfff;
 			tmpStart |= (value & 0xff) << 4;
 
+			if (dstIndex+tmpLength > *dstLength) {
+				tmpLength = (*dstLength)-dstIndex;
+			}
+
 			memcpy(&dst[dstIndex], &tmp4k[tmpStart], tmpLength);
 			memcpy(&tmp4k[tmpIndex], &dst[dstIndex], tmpLength);
 
@@ -367,8 +376,8 @@ Uint32 depack_block(Uint8 *dst, Uint32 length)
 		}
 	}
 
-	/*printf("Depacked to %d len\n", dstIndex-1);*/
+	/*printf("Depacked to %d len\n", dstIndex);*/
 
 	free(src);
-	return dstIndex-1;
+	*dstLength = dstIndex;
 }
