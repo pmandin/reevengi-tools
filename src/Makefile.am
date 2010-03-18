@@ -1,4 +1,5 @@
-bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp ptc2bmp rgb2bmp rofs sld extract_bin
+bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp ptc2bmp rgb2bmp rofs sld \
+	extract_bin iso_search
 
 AM_CFLAGS = $(SDL_CFLAGS)
 
@@ -36,6 +37,8 @@ sld_headers = depack_sld.h
 sld_SOURCES = sld.c depack_sld.c file_functions.c
 
 extract_bin_SOURCES = bin.c file_functions.c
+
+iso_search_SOURCES = iso_search.c
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers)
