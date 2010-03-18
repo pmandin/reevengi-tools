@@ -47,6 +47,10 @@ rofs:		Extract files from Resident Evil 3 PC ROFSxx.DAT archives.
 sld:		Extract files from Resident Evil 3 PC Rxxx.SLD archives.
 		Filed are depacked in current directory as TIMxx.TIM images.
 
+extract_bin:	List files from Resident Evil 2 PS1 DAT/*.BIN archives.
+
+iso_search:	Search some files in a CD-ROM ISO image.
+
 -- 
 Patrice Mandin <patmandin@gmail.com>
 Web: http://pmandin.atari.org/
