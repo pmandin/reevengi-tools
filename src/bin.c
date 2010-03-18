@@ -34,9 +34,9 @@
 /*--- Types ---*/
 
 typedef struct {
-	Uint32 unknown0;
+	Uint32 id;
 	Uint32 length;
-	Uint32 blocks;
+	Uint32 blocks1;
 	Uint32 unknown1[1+12];
 	Uint8 filename[0x800-0x40];
 } bin_header_t;
@@ -88,8 +88,16 @@ void list_files(const char *filename)
 	SDL_RWseek(src, 0, RW_SEEK_SET);
 
 	offset = 0;
-	while ((offset<bin_length) && SDL_RWread(src, &bin_hdr, sizeof(bin_header_t),1)) {
-		int fileLen = SDL_SwapLE32(bin_hdr.length);
+	while (offset<bin_length) {
+		Uint32 fileNum;
+		int fileLen;
+
+		SDL_RWread(src, &bin_hdr, sizeof(bin_header_t),1);
+		if (SDL_SwapLE32(bin_hdr.id) == 0xffffffffUL) {
+			break;
+		}
+
+		fileLen = SDL_SwapLE32(bin_hdr.length);
 		if (fileLen==0) {
 			break;
 		}
@@ -97,7 +105,19 @@ void list_files(const char *filename)
 		printf("Offset 0x%08x, Length 0x%08x, %s\n", offset,fileLen,bin_hdr.filename);
 
 		/* Next file */
-		offset += SDL_SwapLE32(bin_hdr.blocks) * 0x800;
+		offset += SDL_SwapLE32(bin_hdr.blocks1) * 0x800;
+
+		switch(SDL_SwapLE32(bin_hdr.id)) {
+			case 1:
+				offset -= 0x800;
+				break;
+			case 5:
+			case 9:
+				offset += 0x800;
+				break;
+		}
+
+
 		SDL_RWseek(src, offset, RW_SEEK_SET);
 	}
 
