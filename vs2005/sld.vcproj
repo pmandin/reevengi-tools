@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="bss2bmp"
-	ProjectGUID="{C3CCD7E4-9105-4C8B-B3DE-484982DAAC4F}"
-	RootNamespace="bss2bmp"
+	Name="sld"
+	ProjectGUID="{2413DE52-3A7E-4F29-8694-80C2A8261242}"
+	RootNamespace="sld"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -179,41 +179,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\bss2bmp.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\src\depack_mdec.c"
+				RelativePath="..\src\sld.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\depack_vlc.c"
+				RelativePath="..\src\depack_sld.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\file_functions.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\idctfst.c"
 				>
 			</File>
 		</Filter>
@@ -227,22 +201,24 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\depack_mdec.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\depack_vlc.h"
+				RelativePath="..\src\depack_sld.h"
 				>
 			</File>
 			<File
 				RelativePath="..\src\file_functions.h"
 				>
 			</File>
-			<File
-				RelativePath="..\src\idctfst.h"
-				>
-			</File>
 		</Filter>
+		<Filter
+			Name="Fichiers de ressources"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

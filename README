@@ -49,7 +49,7 @@ sld:		Extract files from Resident Evil 3 PC Rxxx.SLD archives.
 
 extract_bin:	List files from Resident Evil 2 PS1 DAT/*.BIN archives.
 
-iso_search:	Search some files in a CD-ROM ISO image.
+iso_search:	Search and extract some files from a CD-ROM ISO image.
 
 -- 
 Patrice Mandin <patmandin@gmail.com>

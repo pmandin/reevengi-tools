@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="bss2bmp"
-	ProjectGUID="{C3CCD7E4-9105-4C8B-B3DE-484982DAAC4F}"
-	RootNamespace="bss2bmp"
+	Name="rofs"
+	ProjectGUID="{6E7C2D62-E1DA-4593-AB5D-55A0FE507F91}"
+	RootNamespace="rofs"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -179,41 +179,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\bss2bmp.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\src\depack_mdec.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\depack_vlc.c"
+				RelativePath="..\src\rofs.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\file_functions.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\idctfst.c"
 				>
 			</File>
 		</Filter>
@@ -227,19 +197,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\depack_mdec.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\depack_vlc.h"
-				>
-			</File>
-			<File
 				RelativePath="..\src\file_functions.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\idctfst.h"
 				>
 			</File>
 		</Filter>

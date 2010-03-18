@@ -1,7 +1,7 @@
-v 0.3
+v 0.4
 
-- Add converters from PIX to BMP, PTC to BMP, RGB to BMP.
-- Add depackers for RE3 ROFS and SLD archives.
+- ROFS: Fixed decompression in 32KB blocks.
+- Added file searcher for CD-ROM ISO images.
 
 
 See ChangeLog for older changes.

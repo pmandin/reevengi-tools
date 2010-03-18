@@ -30,7 +30,7 @@
 
 /*--- Defines ---*/
 
-/*#define EXTRACT_FILES	1*/
+#define EXTRACT_FILES	1
 
 #define MAGIC_TIM	0x10
 #define TIM_TYPE_4	8
