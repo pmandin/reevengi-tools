@@ -116,6 +116,16 @@ int browse_iso(const char *filename)
 					printf("Sector %d (offset 0x%08x): 16 bits TIM image\n",i,offset);
 					break;
 			}
+		} else if (value < 512<<10) {
+			/* EMD model ? */
+			value = (data[28+3]<<24)|
+				(data[28+2]<<16)|
+				(data[28+1]<<8)|
+				data[28];
+
+			if (value==0x0f) {
+				printf("Sector %d (offset 0x%08x): EMD model (maybe)\n",i,offset);
+			}
 		}
 	}
 
