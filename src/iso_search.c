@@ -150,7 +150,7 @@ int browse_iso(const char *filename)
 			}
 		}
 
-		if ((start>16000) && (end!=0) && extract_flag) {
+		if ((start!=0) && (end!=0) && extract_flag) {
 #ifdef EXTRACT_FILES
 			extract_file(src, start,end, file_type);
 #endif
