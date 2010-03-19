@@ -17,6 +17,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rofs", "rofs.vcproj", "{6E7
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sld", "sld.vcproj", "{2413DE52-3A7E-4F29-8694-80C2A8261242}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract_bin", "extract_bin.vcproj", "{24245AB7-68B6-42E0-BEBD-4E590B30DB18}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iso_search", "iso_search.vcproj", "{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +59,14 @@ Global
 		{2413DE52-3A7E-4F29-8694-80C2A8261242}.Debug|Win32.Build.0 = Debug|Win32
 		{2413DE52-3A7E-4F29-8694-80C2A8261242}.Release|Win32.ActiveCfg = Release|Win32
 		{2413DE52-3A7E-4F29-8694-80C2A8261242}.Release|Win32.Build.0 = Release|Win32
+		{24245AB7-68B6-42E0-BEBD-4E590B30DB18}.Debug|Win32.ActiveCfg = Debug|Win32
+		{24245AB7-68B6-42E0-BEBD-4E590B30DB18}.Debug|Win32.Build.0 = Debug|Win32
+		{24245AB7-68B6-42E0-BEBD-4E590B30DB18}.Release|Win32.ActiveCfg = Release|Win32
+		{24245AB7-68B6-42E0-BEBD-4E590B30DB18}.Release|Win32.Build.0 = Release|Win32
+		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Debug|Win32.Build.0 = Debug|Win32
+		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Release|Win32.ActiveCfg = Release|Win32
+		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
