@@ -51,7 +51,8 @@ extract_bin:	List and extract files from Resident Evil 2 PS1 DAT/*.BIN
 		archives.
 		Filed are depacked in current directory.
 
-iso_search:	Search and extract some files from a CD-ROM ISO image.
+iso_search:	Search and extract some files from Resident Evil 3 PS1 CD-ROM
+		ISO image.
 		Filed are depacked in current directory (.TIM or .EMD).
 
 -- 

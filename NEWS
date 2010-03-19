@@ -1,7 +1,7 @@
 v 0.4
 
 - ROFS: Fixed decompression in 32KB blocks.
-- Added file searcher for CD-ROM ISO images.
+- Added file searcher for RE3 PS1 CD-ROM ISO images.
 
 
 See ChangeLog for older changes.
