@@ -41,6 +41,7 @@
 #define FILE_EMD	1
 
 #define DATA_LENGTH 2048
+#define MAX_FILE_SIZE (512<<10)
 
 /*--- Functions prototypes ---*/
 
@@ -145,11 +146,17 @@ int browse_iso(const char *filename)
 				extract_flag = 1;
 				new_file_type = FILE_EMD;
 			}
+		} else if ((i-start)*block_size>=MAX_FILE_SIZE) {
+			end = i;
+			extract_flag = 1;
+			new_file_type = -1;
 		}
 
 		if ((start!=0) && (end!=0) && extract_flag) {
 #ifdef EXTRACT_FILES
-			extract_file(src, start,end,block_size, file_type);
+			if (file_type != -1) {
+				extract_file(src, start,end,block_size, file_type);
+			}
 #endif
 			extract_flag = 0;
 			file_type = new_file_type;
