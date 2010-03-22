@@ -46,7 +46,7 @@
 
 int browse_iso(const char *filename);
 int get_sector_size(SDL_RWops *src);
-void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int file_type);
+void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int file_type);
 
 /*--- Functions ---*/
 
@@ -76,6 +76,7 @@ int browse_iso(const char *filename)
 	SDL_RWops *src;
 	Uint32 length, blocks, offset;
 	Uint8 data[2352];
+	int block_size, stop_extract=0;
 	int i, extract_flag = 0, file_type = FILE_TIM, new_file_type = FILE_TIM;
 	Uint32 start=0,end=0;
 
@@ -85,36 +86,31 @@ int browse_iso(const char *filename)
 		return 1;
 	}
 
-	SDL_RWseek(src, 0, RW_SEEK_END);
-	length = SDL_RWtell(src);
-	SDL_RWseek(src, 0, RW_SEEK_SET);
-
-	blocks = length/2352;
-	if (blocks*2352 != length) {
-		fprintf(stderr, "Image must have size multiple of 2352 bytes\n");
-		SDL_RWclose(src);
-		return 1;
-	}
+	block_size = get_sector_size(src);
+	printf("Sector size: %d\n", block_size);
 
 	start = end = 0;
-	for (i=0; i<blocks; i++) {
+	offset = (block_size == 2352) ? 16+8 : 0;
+	for (i=0; !stop_extract; offset+=block_size, i++) {
 		Uint32 value;
 
-		offset = i * 2352;
 		SDL_RWseek(src, offset, RW_SEEK_SET);
-		SDL_RWread(src, data, 2352, 1);
+		if (SDL_RWread(src, data, block_size, 1) != 1) {
+			stop_extract=1;
+			continue;
+		}
 
-		value = (data[24+3]<<24)|
-			(data[24+2]<<16)|
-			(data[24+1]<<8)|
-			data[24];
+		value = (data[3]<<24)|
+			(data[2]<<16)|
+			(data[1]<<8)|
+			data[0];
 
 		if (value == MAGIC_TIM) {
 			/* TIM image ? */
-			value = (data[28+3]<<24)|
-				(data[28+2]<<16)|
-				(data[28+1]<<8)|
-				data[28];
+			value = (data[4+3]<<24)|
+				(data[4+2]<<16)|
+				(data[4+1]<<8)|
+				data[4];
 
 			switch(value) {
 				case TIM_TYPE_4:
@@ -138,10 +134,10 @@ int browse_iso(const char *filename)
 			}
 		} else if (value < 512<<10) {
 			/* EMD model ? */
-			value = (data[28+3]<<24)|
-				(data[28+2]<<16)|
-				(data[28+1]<<8)|
-				data[28];
+			value = (data[4+3]<<24)|
+				(data[4+2]<<16)|
+				(data[4+1]<<8)|
+				data[4];
 
 			if (value==0x0f) {
 				printf("Sector %d (offset 0x%08x): EMD model (maybe)\n",i,offset);
@@ -153,7 +149,7 @@ int browse_iso(const char *filename)
 
 		if ((start!=0) && (end!=0) && extract_flag) {
 #ifdef EXTRACT_FILES
-			extract_file(src, start,end, file_type);
+			extract_file(src, start,end,block_size, file_type);
 #endif
 			extract_flag = 0;
 			file_type = new_file_type;
@@ -171,8 +167,9 @@ int browse_iso(const char *filename)
 int get_sector_size(SDL_RWops *src)
 {
 	char tmp[12];
-	const char xamode[12]={0,0xff,0xff,0xff, 0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff, 0xff,0xff,0xff,0};
+	const char xamode[12]={0,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0};
 
 	SDL_RWseek(src, 0, RW_SEEK_SET);
 	SDL_RWread(src, tmp, 12, 1);
@@ -189,7 +186,7 @@ int get_sector_size(SDL_RWops *src)
 	return 2352;
 }
 
-void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int file_type)
+void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int file_type)
 {
 	Uint8 *buffer;
 	Uint32 length = DATA_LENGTH * (end-start);
@@ -204,7 +201,11 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int file_type)
 	}
 
 	for (i=0; i<end-start; i++) {	
-		SDL_RWseek(src, ((start+i)*2352)+16+8, RW_SEEK_SET);
+		if (block_size==2352) {
+			SDL_RWseek(src, ((start+i)*2352)+16+8, RW_SEEK_SET);
+		} else {
+			SDL_RWseek(src, (start+i)*2048, RW_SEEK_SET);
+		}
 		SDL_RWread(src, &buffer[i*DATA_LENGTH], DATA_LENGTH, 1);
 	}
 
