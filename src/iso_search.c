@@ -45,6 +45,7 @@
 /*--- Functions prototypes ---*/
 
 int browse_iso(const char *filename);
+int get_sector_size(SDL_RWops *src);
 void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int file_type);
 
 /*--- Functions ---*/
@@ -165,6 +166,27 @@ int browse_iso(const char *filename)
 
 	SDL_RWclose(src);
 	return 0;
+}
+
+int get_sector_size(SDL_RWops *src)
+{
+	char tmp[12];
+	const char xamode[12]={0,0xff,0xff,0xff, 0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff, 0xff,0xff,0xff,0};
+
+	SDL_RWseek(src, 0, RW_SEEK_SET);
+	SDL_RWread(src, tmp, 12, 1);
+	if (memcmp(tmp, xamode, 12) != 0) {
+		return 2048;
+	}
+
+	SDL_RWseek(src, 2352, RW_SEEK_SET);
+	SDL_RWread(src, tmp, 12, 1);
+	if (memcmp(tmp, xamode, 12) != 0) {
+		return 2048;
+	}
+
+	return 2352;
 }
 
 void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int file_type)
