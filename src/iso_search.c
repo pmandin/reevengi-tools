@@ -29,16 +29,12 @@
 #include <SDL.h>
 
 #include "md5.h"
+#include "background_tim.h"
 
 /*--- Defines ---*/
 
-/*#define EXTRACT_FILES	1*/
-#define EXTRACT_FOR_SOURCE 1
-
-#define MAGIC_TIM	0x10
-#define TIM_TYPE_4	8
-#define TIM_TYPE_8	9
-#define TIM_TYPE_16	2
+#define EXTRACT_FILES	1
+/*#define EXTRACT_FOR_SOURCE 1*/
 
 #define FILE_TIM	0
 #define FILE_EMD	1
@@ -201,6 +197,9 @@ const md5_check_t md5_checks[]={
 int browse_iso(const char *filename);
 int get_sector_size(SDL_RWops *src);
 void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int file_type);
+
+Uint32 get_tim_length(Uint8 *buffer, Uint32 buflen);
+Uint32 get_emd_length(Uint8 *buffer, Uint32 buflen);
 
 /*--- Functions ---*/
 
@@ -375,9 +374,11 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 	switch(file_type) {
 		case FILE_TIM:
 			fileext = "%08x.tim";
+			length = get_tim_length(buffer, length);
 			break;
 		case FILE_EMD:
 			fileext = "%08x.emd";
+			length = get_emd_length(buffer, length);
 			break;
 	}
 	sprintf(filename, fileext, start);
@@ -393,4 +394,26 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 	SDL_RWclose(dst);
 
 	free(buffer);
+}
+
+Uint32 get_tim_length(Uint8 *buffer, Uint32 buflen)
+{
+	tim_header_t *tim_header = (tim_header_t *) buffer;
+	tim_size_t *tim_size;
+	int w,h;
+	int num_palettes, num_colors, img_offset;
+
+	img_offset = SDL_SwapLE32(tim_header->offset) + 20;
+
+	tim_size = (tim_size_t *) (&((Uint8 *) buffer)[img_offset-4]);
+	w = SDL_SwapLE16(tim_size->width);
+	h = SDL_SwapLE16(tim_size->height);
+
+	if (
+	return img_offset+(w*h*2);
+}
+
+Uint32 get_emd_length(Uint8 *buffer, Uint32 buflen)
+{
+	return buflen;
 }
