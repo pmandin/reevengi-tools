@@ -1,8 +1,6 @@
-/* $Id$ */
-
 /*
  * Implementation of the md5 algorithm as described in RFC1321
- * Copyright (C) 2005 Quentin Carbonneaux <crazyjoke@free.fr>
+ * Copyright (C) 2005 Quentin Carbonneaux
  * 
  * This file is part of md5sum.
  *
