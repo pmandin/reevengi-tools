@@ -400,8 +400,7 @@ Uint32 get_tim_length(Uint8 *buffer, Uint32 buflen)
 {
 	tim_header_t *tim_header = (tim_header_t *) buffer;
 	tim_size_t *tim_size;
-	int w,h;
-	int num_palettes, num_colors, img_offset;
+	int w,h, img_offset;
 
 	img_offset = SDL_SwapLE32(tim_header->offset) + 20;
 
@@ -414,5 +413,8 @@ Uint32 get_tim_length(Uint8 *buffer, Uint32 buflen)
 
 Uint32 get_emd_length(Uint8 *buffer, Uint32 buflen)
 {
-	return buflen;
+	Uint32 *emd_header = (Uint32 *) buffer;
+	Uint32 dir_offset = SDL_SwapLE32(emd_header[0]);
+
+	return dir_offset+4*15;
 }
