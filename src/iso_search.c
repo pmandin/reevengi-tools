@@ -409,7 +409,6 @@ Uint32 get_tim_length(Uint8 *buffer, Uint32 buflen)
 	w = SDL_SwapLE16(tim_size->width);
 	h = SDL_SwapLE16(tim_size->height);
 
-	if (
 	return img_offset+(w*h*2);
 }
 

@@ -40,7 +40,7 @@ extract_bin_SOURCES = bin.c file_functions.c
 
 iso_search_SOURCES = iso_search.c md5.c
 
-iso_search_headers = md5.h
+iso_search_headers = md5.h background_tim.h
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers) \
