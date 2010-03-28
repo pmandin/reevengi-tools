@@ -62,7 +62,7 @@ md5_check_t md5_checks[]={
 	{"c16bbc8652accffca210b3047dcaf810","room/emd/em12.emd", 0},
 	{"7e04298f5a5adecb14b9d60c9b2d163e","room/emd/em12.tim", 0},
 	{"523090faa3f1e3bc3842fda8c13a20fb","room/emd/em13.emd", 0},
-	{"db00767cce785ef6da1c8e5755fbfe2f","room/emd/em13.tim", 0},
+	{"db00767cce785ef6da1c8e5755fbfe2f","room/emd/em13.tim", 0},	/* = room/emd08/em13.tim */
 	{"6e8153cd2db6405aeb2671471b22bb35","room/emd/em14.emd", 0},
 	{"1225b45f80f7a991830d39ec23fd3e20","room/emd/em14.tim", 0},
 	{"318b4f532fd391a484ea28efaefa1c70","room/emd/em15.emd", 0},
@@ -92,11 +92,11 @@ md5_check_t md5_checks[]={
 	{"84446e90460e558418d500902f99bd0a","room/emd/em21.emd", 0},
 	{"413c9653df474b05f18f778a6cf5a1a2","room/emd/em21.tim", 0},
 	{"ad896f4aaefa49e3186ef388f3affdd8","room/emd/em22.emd", 0},
-	{"aeaf4bac057e0b19b23e85a707bf4631","room/emd/em22.tim", 0},
+	{"aeaf4bac057e0b19b23e85a707bf4631","room/emd/em22.tim", 0},	/* = room/emd08/em22.tim */
 	{"05c86b22e071ac58190219bba7af072c","room/emd/em23.emd", 0},
 	{"77d6dc3597fedd07dee5c2d4fddc3ab6","room/emd/em23.tim", 0},
 	{"6f168094b6c9838546398d9c21d0a055","room/emd/em24.emd", 0},
-	{"6a5aae2906ea61bd978513811e7dc050","room/emd/em24.tim", 0},
+	{"6a5aae2906ea61bd978513811e7dc050","room/emd/em24.tim", 0},	/* = room/emd08/em24.tim */
 	{"97d0268b25e62a84d1dfe51498e04a4d","room/emd/em25.emd", 0},
 	{"33d63344a232dc5292c5e9d3188a293b","room/emd/em25.tim", 0},
 	{"84dde72548a5b980242bd268271d0f3c","room/emd/em26.emd", 0},
@@ -110,7 +110,7 @@ md5_check_t md5_checks[]={
 	{"9aa73cd765be331e3b33e5325b767988","room/emd/em2d.emd", 0},
 	{"c965e1faa886bde5f873a4d92da0b35b","room/emd/em2d.tim", 0},
 	{"f1bb239b039b546ff02fdb656a133f8a","room/emd/em2e.emd", 0},
-	{"4bbe791db00d84a618abce4d23d66d99","room/emd/em2e.tim", 0},	/* = em55.tim */
+	{"4bbe791db00d84a618abce4d23d66d99","room/emd/em2e.tim", 0},	/* = room/emd/em55.tim */
 	{"ee2c79a51839e69a9677640f4d179f60","room/emd/em2f.emd", 0},
 	{"b414d04bdb0fd4c4fb20927a1c85f4b8","room/emd/em2f.tim", 0},
 	{"b3f81d8b8e638bb6bf7612f10b33d868","room/emd/em30.emd", 0},
@@ -152,7 +152,7 @@ md5_check_t md5_checks[]={
 	{"b756093ae4ecf24371ae578402cc4bd2","room/emd/em54.emd", 0},
 	{"9cbfad29fbdb8b9c9c455840eab2d8bb","room/emd/em54.tim", 0},
 	{"5ecff12c4ec3f4a3f7f5722c66b9755b","room/emd/em55.emd", 0},
-	{"4bbe791db00d84a618abce4d23d66d99","room/emd/em55.tim", 0},	/* = em2e.tim */
+	{"4bbe791db00d84a618abce4d23d66d99","room/emd/em55.tim", 0},	/* = room/emd/em2e.tim */
 	{"152145fbf233f55128af760a289cf5b0","room/emd/em56.emd", 0},
 	{"983c220257e26c614616d4892809eb79","room/emd/em56.tim", 0},
 	{"fa75db12f62d6f89af75216e45c11758","room/emd/em57.emd", 0},
@@ -201,7 +201,7 @@ md5_check_t md5_checks[]={
 	{"ed4662ca2fa969fd817c912df883c145","room/emd08/em12.emd", 0},
 	{"7e04298f5a5adecb14b9d60c9b2d163e","room/emd08/em12.tim", 0},
 	{"1097f3636e29f3636e9913419c0e86fe","room/emd08/em13.emd", 0},
-	{"db00767cce785ef6da1c8e5755fbfe2f","room/emd08/em13.tim", 0},
+	{"db00767cce785ef6da1c8e5755fbfe2f","room/emd08/em13.tim", 0},	/* = room/emd/em13.tim */
 	{"909fe3a144469c5a54060c37818f3afa","room/emd08/em14.emd", 0},
 	{"1225b45f80f7a991830d39ec23fd3e20","room/emd08/em14.tim", 0},
 	{"6d4e63bdf331012f0efa85a7f0f1c7f3","room/emd08/em15.emd", 0},
@@ -231,10 +231,10 @@ md5_check_t md5_checks[]={
 	{"82bec8accce5a47bf44f5fa06a0ac55e","room/emd08/em21.emd", 0},
 	{"413c9653df474b05f18f778a6cf5a1a2","room/emd08/em21.tim", 0},
 	{"4db50dd8f49bd75a81239e0d96c582ff","room/emd08/em22.emd", 0},
-	{"aeaf4bac057e0b19b23e85a707bf4631","room/emd08/em22.tim", 0},
+	{"aeaf4bac057e0b19b23e85a707bf4631","room/emd08/em22.tim", 0},	/* = room/emd/em22.tim */
 	{"ec0bba0099f7d28979006066589eccc8","room/emd08/em23.emd", 0},
 	{"77d6dc3597fedd07dee5c2d4fddc3ab6","room/emd08/em23.tim", 0},
-	{"e4e2f5539874d814e67903198d863393","room/emd08/em24.emd", 0},
+	{"e4e2f5539874d814e67903198d863393","room/emd08/em24.emd", 0},	/* = room/emd/em24.tim */
 	{"6a5aae2906ea61bd978513811e7dc050","room/emd08/em24.tim", 0},
 	{"97d0268b25e62a84d1dfe51498e04a4d","room/emd08/em25.emd", 0},
 	{"33d63344a232dc5292c5e9d3188a293b","room/emd08/em25.tim", 0},
