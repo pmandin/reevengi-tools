@@ -2,6 +2,7 @@ v 0.5
 
 - iso_search: Limit extracted file sizes to 512K.
 - iso_search: Added support for 2336 bytes per sector.
+- iso_search: Use MD5 to identify files compared to PC version.
 
 v 0.4
 

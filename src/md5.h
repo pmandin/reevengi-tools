@@ -1,65 +1,91 @@
 /*
- * Implementation of the md5 algorithm described in RFC1321
- * Copyright (C) 2005 Quentin Carbonneaux
- * 
- * This file is part of md5sum.
- *
- * md5sum is a free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Softawre Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * md5sum is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should hav received a copy of the GNU General Public License
- * along with md5sum; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  L. Peter Deutsch
+  ghost@aladdin.com
+
+ */
+/* $Id$ */
+/*
+  Independent implementation of MD5 (RFC 1321).
+
+  This code implements the MD5 Algorithm defined in RFC 1321, whose
+  text is available at
+	http://www.ietf.org/rfc/rfc1321.txt
+  The code is derived from the text of the RFC, including the test suite
+  (section A.5) but excluding the rest of Appendix A.  It does not include
+  any code or documentation that is identified in the RFC as being
+  copyrighted.
+
+  The original and principal author of md5.h is L. Peter Deutsch
+  <ghost@aladdin.com>.  Other authors are noted in the change history
+  that follows (in reverse chronological order):
+
+  2002-04-13 lpd Removed support for non-ANSI compilers; removed
+	references to Ghostscript; clarified derivation from RFC 1321;
+	now handles byte order either statically or dynamically.
+  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
+  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5);
+	added conditionalization for C++ compilation from Martin
+	Purschke <purschke@bnl.gov>.
+  1999-05-03 lpd Original version.
  */
 
-#ifndef MD5_H
-#define MD5_H
+#ifndef md5_INCLUDED
+#  define md5_INCLUDED
 
-#include <assert.h>
-#include <stdlib.h>
-
-/* WARNING :
- * This implementation is using 32 bits long values for sizes
+/*
+ * This package supports both compile-time and run-time determination of CPU
+ * byte order.  If ARCH_IS_BIG_ENDIAN is defined as 0, the code will be
+ * compiled to run only on little-endian CPUs; if ARCH_IS_BIG_ENDIAN is
+ * defined as non-zero, the code will be compiled to run only on big-endian
+ * CPUs; if ARCH_IS_BIG_ENDIAN is not defined, the code will be compiled to
+ * run on either big- or little-endian CPUs, but will run slightly less
+ * efficiently on either one than if ARCH_IS_BIG_ENDIAN is defined.
  */
-typedef unsigned int md5_size;
 
-/* MD5 context */
-struct md5_ctx {
-	struct {
-		unsigned int A, B, C, D; /* registers */
-	} regs;
-	unsigned char *buf;
-	md5_size size;
-	md5_size bits;
-};
+typedef unsigned char md5_byte_t; /* 8-bit byte */
+typedef unsigned int md5_word_t; /* 32-bit word */
 
-/* Size of the MD5 buffer */
-#define MD5_BUFFER 1024
+/* Define the state of the MD5 Algorithm. */
+typedef struct md5_state_s {
+    md5_word_t count[2];	/* message length in bits, lsw first */
+    md5_word_t abcd[4];		/* digest buffer */
+    md5_byte_t buf[64];		/* accumulate block */
+} md5_state_t;
 
-/* Basic md5 functions */
-#define F(x,y,z) ((x & y) | (~x & z))
-#define G(x,y,z) ((x & z) | (~z & y))
-#define H(x,y,z) (x ^ y ^ z)
-#define I(x,y,z) (y ^ (x | ~z))
+#ifdef __cplusplus
+extern "C" 
+{
+#endif
 
-/* Rotate left 32 bits values (words) */
-#define ROTATE_LEFT(w,s) ((w << s) | ((w & 0xFFFFFFFF) >> (32 - s)))
+/* Initialize the algorithm. */
+void md5_init(md5_state_t *pms);
 
-#define FF(a,b,c,d,x,s,t) (a = b + ROTATE_LEFT((a + F(b,c,d) + x + t), s))
-#define GG(a,b,c,d,x,s,t) (a = b + ROTATE_LEFT((a + G(b,c,d) + x + t), s))
-#define HH(a,b,c,d,x,s,t) (a = b + ROTATE_LEFT((a + H(b,c,d) + x + t), s))
-#define II(a,b,c,d,x,s,t) (a = b + ROTATE_LEFT((a + I(b,c,d) + x + t), s))
+/* Append a string to the message. */
+void md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
 
-unsigned char *md5 (unsigned char *, md5_size, unsigned char *);
-void md5_init (struct md5_ctx *);
-void md5_update (struct md5_ctx *context);
-void md5_final (unsigned char *digest, struct md5_ctx *context);
+/* Finish the message and return the digest. */
+void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
 
-#endif /* MD5_H */
+#ifdef __cplusplus
+}  /* end extern "C" */
+#endif
+
+#endif /* md5_INCLUDED */
