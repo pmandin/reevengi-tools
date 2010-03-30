@@ -40,6 +40,7 @@
 #define FILE_TIM_8	1
 #define FILE_TIM_16	2
 #define FILE_EMD	3
+#define FILE_DO2	4
 
 #define DATA_LENGTH 2048
 #define MAX_FILE_SIZE (512<<10)
@@ -424,7 +425,18 @@ int browse_iso(const char *filename)
 			(data[1]<<8)|
 			data[0];
 
-		if (value == MAGIC_TIM) {
+		if (value == 0x00601408UL) {
+			value = (data[4+3]<<24)|
+				(data[4+2]<<16)|
+				(data[4+1]<<8)|
+				data[4];
+
+			if (value == 0x00612408UL) {
+				end = i;
+				extract_flag = 1;
+				new_file_type = FILE_DO2;
+			}
+		} else if (value == MAGIC_TIM) {
 			/* TIM image ? */
 			value = (data[4+3]<<24)|
 				(data[4+2]<<16)|
@@ -543,6 +555,10 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 			fileext = "%08x.emd";
 			length = get_emd_length(buffer, length);
 			break;
+		case FILE_DO2:
+			fileext = "%08x.do2";
+			/*length = get_emd_length(buffer, length);*/
+			break;
 	}
 	sprintf(filename, fileext, start);
 
@@ -585,6 +601,9 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 			break;
 		case FILE_EMD:
 			printf("Sector %d: EMD file\n",start);
+			break;
+		case FILE_DO2:
+			printf("Sector %d: DO2 file\n",start);
 			break;
 	}
 
