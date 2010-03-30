@@ -434,7 +434,8 @@ int browse_iso(const char *filename)
 			if (value == 0x00612408UL) {
 				end = i;
 				extract_flag = 1;
-				new_file_type = FILE_DO2;
+				/*new_file_type = FILE_DO2;*/
+				new_file_type = -1;
 			}
 		} else if (value == MAGIC_TIM) {
 			/* TIM image ? */
