@@ -30,6 +30,7 @@
 
 #include "depack_adt.h"
 #include "file_functions.h"
+#include "param.h"
 
 /*--- Defines ---*/
 
@@ -41,6 +42,44 @@
 #define ADT_DEPACKED_RAW 0	/* raw 16 bits image, saved as bmp */
 #define ADT_DEPACKED_TIM 1	/* tim image, saved as is */
 #define ADT_DEPACKED_UNK 2	/* other type, saved as raw */
+
+/*--- Variables ---*/
+
+/* Keep ADT raw images depacked as is
+ * Some RE2 PC versions do not organize them as 256x256 block+64x128 blocks
+ */
+static int noreorg = 0;
+
+/*--- Functions prototypes ---*/
+
+int convert_image(const char *filename);
+
+/*--- Functions ---*/
+
+int main(int argc, char **argv)
+{
+	int retval;
+
+	if (argc<2) {
+		fprintf(stderr, "Usage: %s [-noreorg] /path/to/filename.adt\n", argv[0]);
+		return 1;
+	}
+
+	if (param_check("-noreorg",argc,argv)>=0) {
+		noreorg = 1;
+	}
+
+	if (SDL_Init(SDL_INIT_VIDEO)<0) {
+		fprintf(stderr, "Can not initialize SDL: %s\n", SDL_GetError());
+		return 1;
+	}
+	atexit(SDL_Quit);
+
+	retval = convert_image(argv[argc-1]);
+
+	SDL_Quit();
+	return retval;
+}
 
 int convert_image(const char *filename)
 {
@@ -84,7 +123,7 @@ int convert_image(const char *filename)
 			case ADT_DEPACKED_RAW:
 				{
 					/* Raw image, save as BMP */
-					SDL_Surface *image = adt_surface((Uint16 *) dstBuffer, 1);
+					SDL_Surface *image = adt_surface((Uint16 *) dstBuffer, noreorg ^ 1);
 					if (image) {
 						save_bmp(filename, image);
 						SDL_FreeSurface(image);
@@ -116,26 +155,5 @@ int convert_image(const char *filename)
 		fprintf(stderr, "Error depacking file\n");
 	}
 
-	return retval;
-}
-
-int main(int argc, char **argv)
-{
-	int retval;
-
-	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.adt\n", argv[0]);
-		return 1;
-	}
-
-	if (SDL_Init(SDL_INIT_VIDEO)<0) {
-		fprintf(stderr, "Can not initialize SDL: %s\n", SDL_GetError());
-		return 1;
-	}
-	atexit(SDL_Quit);
-
-	retval = convert_image(argv[1]);
-
-	SDL_Quit();
 	return retval;
 }

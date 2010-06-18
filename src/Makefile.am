@@ -7,7 +7,7 @@ LIBS = $(SDL_LIBS)
 
 common_headers = file_functions.h param.h
 
-adt2img_SOURCES = adt2img.c file_functions.c depack_adt.c
+adt2img_SOURCES = adt2img.c file_functions.c depack_adt.c param.c
 
 adt2img_headers = depack_adt.h
 

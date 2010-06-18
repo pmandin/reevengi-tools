@@ -5,6 +5,7 @@ v 0.5
 - iso_search: Use MD5 to identify files compared to PC version.
 - pak2tim: Add -r4 command line param for images stored with 4 pixels less on
   their border.
+- adt2img: Add -noreorg command line param to keep depacked image as is.
 
 v 0.4
 

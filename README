@@ -26,6 +26,10 @@ adt2img:	Depack Resident Evil 2 PC ADT image files.
 		The result is either a raw image (saved to BMP in this case)
 		or a TIM image (saved to TIM).
 
+		Use '-noreorg' command line parameter to keep depacked image
+		as is, for RE2 PC versions that do not have have them organized
+		in 256x256 block + 64x128 blocks.
+
 bss2bmp:	Depack PS1 BSS image files.
 		The result is saved to a BMP image.
 
