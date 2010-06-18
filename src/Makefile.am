@@ -5,7 +5,7 @@ AM_CFLAGS = $(SDL_CFLAGS)
 
 LIBS = $(SDL_LIBS)
 
-common_headers = file_functions.h
+common_headers = file_functions.h param.h
 
 adt2img_SOURCES = adt2img.c file_functions.c depack_adt.c
 
@@ -16,7 +16,7 @@ bss2bmp_SOURCES = bss2bmp.c depack_mdec.c depack_vlc.c idctfst.c \
 
 bss2bmp_headers = depack_mdec.h depack_vlc.h idctfst.h
 
-pak2tim_SOURCES = pak2tim.c file_functions.c depack_pak.c
+pak2tim_SOURCES = pak2tim.c file_functions.c depack_pak.c param.c
 
 pak2tim_headers = depack_pak.h
 
@@ -45,4 +45,3 @@ iso_search_headers = md5.h background_tim.h
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers) \
 	$(iso_search_headers)
-
