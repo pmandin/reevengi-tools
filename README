@@ -32,6 +32,9 @@ bss2bmp:	Depack PS1 BSS image files.
 pak2tim:	Depack Resident Evil PC PAK image files.
 		The result is saved to a TIM image.
 
+		Use '-r4' command line parameter for images that are stored with
+		4 pixels less.
+
 pix2bmp:	Convert Resident Evil PC PIX image files.
 		The result is saved to a BMP image.
 
