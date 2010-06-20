@@ -28,9 +28,15 @@ int param_check(char *param, int myargc, char **myargv)
 	int	i;
 
 	for (i=1; i<myargc; i++) {
+#ifdef WIN32
+		if ( !_stricmp(param, myargv[i]) ) {
+			return i;
+		}
+#else
 		if ( !strcasecmp(param, myargv[i]) ) {
 			return i;
 		}
+#endif
 	}
 
 	return -1;
