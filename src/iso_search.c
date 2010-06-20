@@ -423,12 +423,15 @@ int browse_iso(const char *filename)
 	printf("Sector size: %d\n", block_size);
 
 	start = end = 0;
-	offset = (block_size == 2352) ? 16+8 : 8;
+	offset = ((block_size == 2352)
+		? 16+8
+		: (block_size == 2336 ? 8 : 0));
 	for (i=0; !stop_extract; offset+=block_size, i++) {
 		Uint32 value;
 
 		SDL_RWseek(src, offset, RW_SEEK_SET);
 		if (SDL_RWread(src, data, block_size, 1) != 1) {
+			fprintf(stderr, "Block %d: end of CD\n", i);
 			stop_extract=1;
 			continue;
 		}
@@ -519,7 +522,7 @@ int get_sector_size(SDL_RWops *src)
 	SDL_RWseek(src, 0, RW_SEEK_SET);
 	SDL_RWread(src, tmp, 12, 1);
 	if (memcmp(tmp, xamode, 12) != 0) {
-		return 2336;
+		return 2048;
 	}
 
 	SDL_RWseek(src, 2352, RW_SEEK_SET);
@@ -552,8 +555,10 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 	for (i=0; i<end-start; i++) {	
 		if (block_size==2352) {
 			SDL_RWseek(src, ((start+i)*2352)+16+8, RW_SEEK_SET);
-		} else {
+		} else if (block_size==2336) {
 			SDL_RWseek(src, ((start+i)*2336)+8, RW_SEEK_SET);
+		} else {
+			SDL_RWseek(src, ((start+i)*2048)+0, RW_SEEK_SET);
 		}
 		SDL_RWread(src, &buffer[i*DATA_LENGTH], DATA_LENGTH, 1);
 	}
