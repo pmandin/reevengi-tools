@@ -75,7 +75,7 @@ void list_files(const char *filename)
 	SDL_RWops *src;
 	bin_header_t bin_hdr;
 	Uint32 offset, bin_length;
-	int i;
+	/*int i;*/
 
 	src = SDL_RWFromFile(filename, "rb");
 	if (!src) {
@@ -89,7 +89,7 @@ void list_files(const char *filename)
 
 	offset = 0;
 	while (offset<bin_length) {
-		Uint32 fileNum;
+		/*Uint32 fileNum;*/
 		int fileLen;
 
 		SDL_RWread(src, &bin_hdr, sizeof(bin_header_t),1);

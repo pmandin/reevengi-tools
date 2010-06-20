@@ -407,7 +407,7 @@ int main(int argc, char **argv)
 int browse_iso(const char *filename)
 {
 	SDL_RWops *src;
-	Uint32 length, blocks, offset;
+	Uint32 /*length, blocks,*/ offset;
 	Uint8 data[2352];
 	int block_size, stop_extract=0;
 	int i, extract_flag = 0, file_type = -1, new_file_type = -1;
