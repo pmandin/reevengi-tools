@@ -30,11 +30,9 @@
 
 #include "md5.h"
 #include "background_tim.h"
+#include "param.h"
 
 /*--- Defines ---*/
-
-#define EXTRACT_FILES	1
-#define EXTRACT_FOR_SOURCE 1
 
 #define FILE_TIM_4	0
 #define FILE_TIM_8	1
@@ -359,6 +357,14 @@ md5_check_t md5_checks[]={
 	{"0166fe0b59d0ccd56ff6370a20d5cbe2","room/emd08/em3b.tim", 0}
 };
 
+/*--- Variables ---*/
+
+/* Extract files */
+static int extract_files = 0;	
+
+/* Extract for source code */
+static int extract_src = 0;
+
 /*--- Functions prototypes ---*/
 
 int browse_iso(const char *filename);
@@ -375,8 +381,15 @@ int main(int argc, char **argv)
 	int retval;
 
 	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.iso\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-e] [-s] /path/to/filename.iso\n", argv[0]);
 		return 1;
+	}
+
+	if (param_check("-e",argc,argv)>=0) {
+		extract_files = 1;
+	}
+	if (param_check("-s",argc,argv)>=0) {
+		extract_src = 1;
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO)<0) {
@@ -385,7 +398,7 @@ int main(int argc, char **argv)
 	}
 	atexit(SDL_Quit);
 
-	retval = browse_iso(argv[1]);
+	retval = browse_iso(argv[argc-1]);
 
 	SDL_Quit();
 	return retval;
@@ -608,26 +621,26 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 			break;
 	}
 
-#ifdef EXTRACT_FILES
-	dst = SDL_RWFromFile(filename, "wb");
-	if (!dst) {
-		fprintf(stderr, "Can not create %s for writing\n", filename);
-		free(buffer);
-		return;
+	if (extract_files) {
+		dst = SDL_RWFromFile(filename, "wb");
+		if (!dst) {
+			fprintf(stderr, "Can not create %s for writing\n", filename);
+			free(buffer);
+			return;
+		}
+
+		SDL_RWwrite(dst, buffer, length, 1);
+		SDL_RWclose(dst);
 	}
 
-	SDL_RWwrite(dst, buffer, length, 1);
-	SDL_RWclose(dst);
-#endif
-
-#ifdef EXTRACT_FOR_SOURCE
-	if (found == -1) {
-		/*fprintf(stderr,"\t{%d,%d,\"%s\"},\n",start,end-start, filename);*/
-		fprintf(stderr,"\t{%d,%d,\"\"},\n",start,end-start);
-	} else {
-		fprintf(stderr,"\t{%d,%d,\"%s\"},\n",start,end-start, md5_checks[i].filename);
+	if (extract_src) {
+		if (found == -1) {
+			/*fprintf(stderr,"\t{%d,%d,\"%s\"},\n",start,end-start, filename);*/
+			fprintf(stderr,"\t{%d,%d,\"\"},\n",start,end-start);
+		} else {
+			fprintf(stderr,"\t{%d,%d,\"%s\"},\n",start,end-start, md5_checks[i].filename);
+		}
 	}
-#endif
 
 	free(buffer);
 }

@@ -15,8 +15,8 @@ Use at your own risks.
 1 Command-line parameters
 -------------------------
 
-Most tools take a single file as input parameter. Converted file will be
-created in current directory.
+Most tools take a single file as input parameter. Converted or extracted files
+will be created in current directory.
 
 
 2 Tools list
@@ -49,18 +49,22 @@ rgb2bmp:	Convert Resident Evil PS1 RGB image files.
 		The result is saved to a BMP image.
 
 rofs:		Extract files from Resident Evil 3 PC ROFSxx.DAT archives.
-		Filed are depacked in current directory.
+		Files are depacked in current directory.
 
 sld:		Extract files from Resident Evil 3 PC Rxxx.SLD archives.
-		Filed are depacked in current directory as TIMxx.TIM images.
+		Files are depacked in current directory as TIMxx.TIM images.
 
 extract_bin:	List and extract files from Resident Evil 2 PS1 DAT/*.BIN
 		archives.
-		Filed are depacked in current directory.
+		Files are depacked in current directory.
 
 iso_search:	Search and extract some files from Resident Evil 3 PS1 CD-ROM
 		ISO image.
-		Filed are depacked in current directory (.TIM or .EMD).
+		Files are depacked in current directory (.TIM or .EMD).
+
+		Use '-e' command line parameter to extract found files.
+		Use '-s' command line parameter to dump data for source code
+		integration.
 
 -- 
 Patrice Mandin <patmandin@gmail.com>

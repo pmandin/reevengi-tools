@@ -38,7 +38,7 @@ sld_SOURCES = sld.c depack_sld.c file_functions.c
 
 extract_bin_SOURCES = bin.c file_functions.c
 
-iso_search_SOURCES = iso_search.c md5.c
+iso_search_SOURCES = iso_search.c md5.c param.c
 
 iso_search_headers = md5.h background_tim.h
 

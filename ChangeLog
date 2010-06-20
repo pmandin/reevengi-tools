@@ -3,6 +3,8 @@ v 0.5
 - iso_search: Limit extracted file sizes to 512K.
 - iso_search: Added support for 2336 bytes per sector.
 - iso_search: Use MD5 to identify files compared to PC version.
+- iso_search: Add -e (file extraction) and -s (source integration) command line
+  parameters.
 - pak2tim: Add -r4 command line param for images stored with 4 pixels less on
   their border.
 - adt2img: Add -noreorg command line param to keep depacked image as is.
