@@ -208,6 +208,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\src\param.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -224,6 +228,10 @@
 			</File>
 			<File
 				RelativePath="..\src\file_functions.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\param.h"
 				>
 			</File>
 		</Filter>

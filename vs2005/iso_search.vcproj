@@ -182,6 +182,14 @@
 				RelativePath="..\src\iso_search.c"
 				>
 			</File>
+			<File
+				RelativePath="..\src\md5.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\param.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -190,6 +198,14 @@
 			>
 			<File
 				RelativePath=".\config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\md5.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\param.h"
 				>
 			</File>
 		</Filter>
