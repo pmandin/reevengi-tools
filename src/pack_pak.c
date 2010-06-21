@@ -1,7 +1,7 @@
 /*
 	PAK file packer
 
-	Copyright (C) 2009	Patrice Mandin
+	Copyright (C) 2010	Patrice Mandin
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,20 +23,23 @@
 
 #include <SDL.h>
 
-#if 0
-
 /*--- Defines ---*/
 
 #define CHUNK_SIZE 32768
 
 #define DECODE_SIZE 35024
 
+#define LZW_STOP	0x100	/* End of stream */
+#define LZW_NEXT	0x101	/* Increment bit size */
+#define LZW_CLEAR	0x102	/* Clear dictionary */
+
 /*--- Types ---*/
 
 typedef struct {
-	long flag;
+	long flag;	/* 0: free, 1:in use */
 	long index;
-	long value;	
+	long value;
+	int num_bits;
 } re1_pack_t;
 
 /*--- Variables ---*/
@@ -45,139 +48,127 @@ static Uint8 *dstPointer;
 static int dstBufLen;
 static int dstOffset;
 
-static unsigned char srcByte;
-static int tmpMask;
+static re1_pack_t dict[DECODE_SIZE];
 
-static re1_pack_t tmpArray2[DECODE_SIZE];
-static unsigned char decodeStack[DECODE_SIZE];
+static int out_code, out_code_bits;
+
+static Uint8 *curstr;
+static int curstr_pos, curstr_len;
 
 /*--- Functions ---*/
 
-static int pak_read_bits(SDL_RWops *src, int num_bits)
+static void dict_clear(void)
 {
-	unsigned long value=0, mask;
+	int i;
 
-	mask = 1<<(--num_bits);
-
-	while (mask>0) {
-		if (tmpMask == 0x80) {
-			if ( !SDL_RWread( src, &srcByte, 1, 1 ) ) {
-				srcByte = 0;
-			}
-			/*srcByte = srcPointer[srcOffset++];*/
-		}
-
-		if ((tmpMask & srcByte)!=0) {
-			value |= mask;
-		}
-
-		tmpMask >>= 1;
-		mask >>= 1;
-
-		if (tmpMask == 0) {
-			tmpMask = 0x80;
-		}
+	for (i=0; i<DECODE_SIZE; i++) {
+		dict[i].flag = 0;
+	}
+	for (i=0; i<256; i++) {
+		dict[i].flag = 1;
+		dict[i].value = i;
+		dict[i].num_bits = 8;
 	}
 
-	return value;
+	out_code = 0x103;
+	out_code_bits = 9;
 }
 
-static int pak_decodeString(int decodeStackOffset, unsigned long code)
+static int dict_check(Uint8 new_char)
 {
-	while (code>255) {
-		decodeStack[decodeStackOffset++] = tmpArray2[code].value;
-		code = tmpArray2[code].index;
-	}
-	decodeStack[decodeStackOffset] = code;
-
-	return decodeStackOffset;
+	return -1;
 }
 
-static void pak_write_dest(Uint8 value)
+static int dict_add(Uint8 new_char)
 {
-	if ((dstPointer==NULL) || (dstOffset>=dstBufLen)) {
-		dstBufLen += CHUNK_SIZE;
-		dstPointer = realloc(dstPointer, dstBufLen);
-		if (dstPointer==NULL) {
-			fprintf(stderr, "pak: can not allocate %d bytes\n", dstBufLen);
+	return -1;
+}
+
+static void curstr_clear(void)
+{
+	curstr_pos = 0;
+}
+
+static void curstr_addchar(Uint8 new_char)
+{
+	if (curstr_pos >= curstr_len-1) {
+		int new_len = curstr_len + CHUNK_SIZE;
+		curstr = realloc(curstr, new_len);
+		if (curstr==NULL) {
+			fprintf(stderr, "pak: can not allocate %d bytes\n", new_len);
 			return;
 		}
+		curstr_len = new_len;
 	}
 
-	dstPointer[dstOffset++] = value;
+	curstr[curstr_pos++] = new_char;
 }
-#endif
+
+static void curstr_set(Uint8 new_char)
+{
+	if (curstr_pos >= curstr_len-1) {
+		int new_len = curstr_len + CHUNK_SIZE;
+		curstr = realloc(curstr, new_len);
+		if (curstr==NULL) {
+			fprintf(stderr, "pak: can not allocate %d bytes\n", new_len);
+			return;
+		}
+		curstr_len = new_len;
+	}
+
+	curstr_pos = 1;
+	curstr[0] = new_char;
+}
+
+static void pak_write_bits(Uint32 value, int num_bits)
+{
+}
 
 void pak_pack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 {
-	int num_bits_to_read, i;
-	int lzwnew, c, lzwold, lzwnext;
-	int stop = 0;
+	Uint8 src_char;
 
-	*dstBufPtr /*= dstPointer*/ = NULL;
-	*dstLength /*= dstBufLen = dstOffset*/ = 0;
+	*dstBufPtr = dstPointer = NULL;
+	*dstLength = dstBufLen = dstOffset = 0;
+	curstr_len = 0;
 
-#if 0
-	tmpMask = 0x80;
-	srcByte = 0;	
+	/* Init base dict */
+	dict_clear();
 
-	memset(tmpArray2, 0, sizeof(tmpArray2));
+	/* Current string = empty */
+	curstr_clear();
 
-	while (!stop) {
-		for (i=0; i<DECODE_SIZE; i++) {
-			tmpArray2[i].flag = 0xffffffff;
-		}
-		lzwnext = 0x103;
-		num_bits_to_read = 9;
-
-		c = lzwold = pak_read_bits(src, num_bits_to_read);
-
-		if (lzwold == 0x100) {
+	/* While character in source */
+	for (;;) {
+		if ( SDL_RWread( src, &src_char, 1, 1 ) <= 0) {
+			/* Output end of stream */
+			pak_write_bits(LZW_STOP, 9);
 			break;
 		}
 
-		pak_write_dest(c);
+		/* if cur_string+src_char in dict */
+		if (dict_check(src_char)>=0) {
+			/* cur_string += src_char */
+			curstr_addchar(src_char);
+		} else {
+			/* add cur_string+src_char to dict */
+			int dict_index = dict_add(src_char);
 
-		for(;;) {
-			lzwnew = pak_read_bits(src, num_bits_to_read);
+			/* write cur_string index to output */
+			pak_write_bits(dict_index, dict[dict_index].num_bits);
 
-			if (lzwnew == 0x100) {
-				stop = 1;
-				break;
-			}
-
-			if (lzwnew == 0x102) {
-				break;
-			}
-
-			if (lzwnew == 0x101) {
-				num_bits_to_read++;
-				continue;
-			}
-
-			if (lzwnew >= lzwnext) {
-				decodeStack[0] = c;
-				i = pak_decodeString(1, lzwold);
-			} else {
-				i = pak_decodeString(0, lzwnew);
-			}	
-
-			c = decodeStack[i];
-
-			while (i>=0) {
-				pak_write_dest(decodeStack[i--]);
-			}
-
-			tmpArray2[lzwnext].index = lzwold;
-			tmpArray2[lzwnext].value = c;
-			lzwnext++;
-
-			lzwold = lzwnew;
+			/* cur_string = src_char */
+			curstr_set(src_char);
 		}
 	}
 
-	/* Return depacked buffer */
+	/* Free stuff */
+	if (curstr) {
+		free(curstr);
+		curstr=NULL;
+	}
+
+	/* Return packed buffer */
 	*dstBufPtr = (Uint8 *) dstPointer;
 	*dstLength = dstOffset;
-#endif
 }
