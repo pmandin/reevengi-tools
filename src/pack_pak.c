@@ -55,6 +55,18 @@ static int out_code, out_code_bits;
 static Uint8 *curstr;
 static int curstr_pos, curstr_len;
 
+/*--- Functions prototypes ---*/
+
+static void dict_clear(void);
+static int dict_check(Uint8 new_char);
+static int dict_add(Uint8 new_char);
+
+static void curstr_clear(void);
+static void curstr_addchar(Uint8 new_char);
+static void curstr_set(Uint8 new_char);
+
+static void pak_write_bits(Uint32 value, int num_bits);
+
 /*--- Functions ---*/
 
 static void dict_clear(void)
@@ -106,18 +118,8 @@ static void curstr_addchar(Uint8 new_char)
 
 static void curstr_set(Uint8 new_char)
 {
-	if (curstr_pos >= curstr_len-1) {
-		int new_len = curstr_len + CHUNK_SIZE;
-		curstr = realloc(curstr, new_len);
-		if (curstr==NULL) {
-			fprintf(stderr, "pak: can not allocate %d bytes\n", new_len);
-			return;
-		}
-		curstr_len = new_len;
-	}
-
-	curstr_pos = 1;
-	curstr[0] = new_char;
+	curstr_pos = 0;
+	curstr_addchar(new_char);
 }
 
 static void pak_write_bits(Uint32 value, int num_bits)
