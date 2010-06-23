@@ -87,7 +87,7 @@ static void dict_clear(void)
 
 static void dict_genstr(Uint8 new_char)
 {
-	if (dict[out_code].len < curstr_pos ) {
+	if (dict[out_code].len <= curstr_pos ) {
 		dict[out_code].len = curstr_pos + 1;
 		dict[out_code].enc_str = realloc(dict[out_code].enc_str, dict[out_code].len);
 	}
@@ -163,6 +163,10 @@ static void pak_write_bits(Uint32 value, int num_bits)
 		}
 	}
 
+	if (dstOffset<16) {
+		printf("value:0x%04x bits:%d\n",value,num_bits);
+	}
+
 	while (num_bits>0) {
 		int prev = 0;	/* Current destination byte value to keep */
 		int next = 0;	/* Next value to write */
@@ -180,6 +184,11 @@ static void pak_write_bits(Uint32 value, int num_bits)
 
 		dstPointer[dstOffset] = prev | next;
 		num_bits -= bits_to_write;
+		dstBit -= bits_to_write;
+		if (dstBit<0) {
+			dstBit += 8;
+			dstOffset++;
+		}
 	}
 }
 
@@ -273,11 +282,11 @@ f0
 output:
 08 00 20 80 28 24 10
 
-000010000
-000000000
-100000100
-000000010
-100000100
-100000100
+000010000	0x10
+000000000	0x00
+100000100	0x104	= 0x00,0x00
+000000010	0x02
+100000100	0x104
+100000100	0x104
 00
 */
