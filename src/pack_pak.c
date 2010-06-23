@@ -163,31 +163,15 @@ static void pak_write_bits(Uint32 value, int num_bits)
 		}
 	}
 
-	if (dstOffset<16) {
-		printf("value:0x%04x bits:%d\n",value,num_bits);
-	}
+	while (--num_bits>=0) {
+		Uint8 mask = 1<<dstBit;
 
-	while (num_bits>0) {
-		int prev = 0;	/* Current destination byte value to keep */
-		int next = 0;	/* Next value to write */
-		int bits_to_write = 8;
+		dstPointer[dstOffset] &= ~mask;
+		dstPointer[dstOffset] |= ((value>>num_bits) & 1)<<dstBit;
 
-		if (dstBit<7) {
-			prev = dstPointer[dstOffset] & (0xffffff00UL>>(7-dstBit));
-			bits_to_write = dstBit;
-		}
-		if (num_bits>bits_to_write) {
-			next = value>>(num_bits-bits_to_write);
-		} else {
-			next = value & ((1<<num_bits)-1);
-		}
-
-		dstPointer[dstOffset] = prev | next;
-		num_bits -= bits_to_write;
-		dstBit -= bits_to_write;
-		if (dstBit<0) {
-			dstBit += 8;
-			dstOffset++;
+		if (--dstBit<0) {
+			dstBit=7;
+			++dstOffset;
 		}
 	}
 }
