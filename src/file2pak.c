@@ -43,7 +43,7 @@ static int remove4pix = 0;
 /*--- Functions prototypes ---*/
 
 int convert_image(const char *filename);
-void remove_4_pixels(Uint8 **dstPointer, int *dstLength);
+void remove_4_pixels(Uint8 *srcBuffer, int srcBufLen);
 
 /*--- Functions ---*/
 
@@ -75,43 +75,61 @@ int main(int argc, char **argv)
 int convert_image(const char *filename)
 {
 	SDL_RWops *src;
-	Uint8 *dstBuffer;
-	int dstBufLen;
+	Uint8 *dstBuffer, *srcBuffer;
+	int dstBufLen, srcBufLen;
 	int retval = 1;
 
+	/* Read file in memory */
 	src = SDL_RWFromFile(filename, "rb");
 	if (!src) {
 		fprintf(stderr, "Can not open %s for reading\n", filename);
 		return retval;
 	}
-	pak_pack(src, &dstBuffer, &dstBufLen);
+
+	SDL_RWseek(src, 0, RW_SEEK_END);
+	srcBufLen = SDL_RWtell(src);
+	SDL_RWseek(src, 0, RW_SEEK_SET);
+
+	srcBuffer = (Uint8 *) malloc(srcBufLen);
+	if (!srcBuffer) {
+		fprintf(stderr, "Can not allocate %d bytes in memory\n", srcBufLen);
+		return retval;
+	}
+	SDL_RWread(src, srcBuffer, srcBufLen, 1);
 	SDL_RWclose(src);
 
-	if (dstBuffer && dstBufLen) {
-		if (remove4pix) {
-			remove_4_pixels(&dstBuffer, &dstBufLen);
+	/* Remove 4 pixels ? */
+	if (remove4pix) {
+		remove_4_pixels(srcBuffer, srcBufLen);
+	}
+
+	src = SDL_RWFromMem(srcBuffer, srcBufLen);
+	if (src) {
+		pak_pack(src, &dstBuffer, &dstBufLen);
+
+		if (dstBuffer && dstBufLen) {
+			save_pak(filename, dstBuffer, dstBufLen);
+
+			free(dstBuffer);
+			retval = 0;
+		} else {
+			fprintf(stderr, "Error packing file\n");
 		}
 
-		save_pak(filename, dstBuffer, dstBufLen);
-
-		free(dstBuffer);
-		retval = 0;
-	} else {
-		fprintf(stderr, "Error packing file\n");
+		SDL_RWclose(src);
 	}
+
+	free(srcBuffer);
 
 	return retval;
 }
 
-void remove_4_pixels(Uint8 **dstPointer, int *dstLength)
+void remove_4_pixels(Uint8 *srcBuffer, int srcBufLen)
 {
-	Uint8 *srcBuffer = *dstPointer;
-	int srcBufLen = *dstLength;
 	tim_header_t *tim_header = (tim_header_t *) srcBuffer;
 	tim_size_t *tim_size;
 	Uint32 tim_type, img_offset;
-	Uint8 *srcImage, *dstImage;
-	Uint16 *srcRow, *dstRow;
+	Uint16 *srcImage, *dstImage;
 	int x,y,w,h;
 
 	if (SDL_SwapLE32(tim_header->magic) != MAGIC_TIM) {
@@ -129,24 +147,11 @@ void remove_4_pixels(Uint8 **dstPointer, int *dstLength)
 	w = SDL_SwapLE16(tim_size->width);
 	h = SDL_SwapLE16(tim_size->height);
 
-	srcImage = (Uint8 *) malloc(w * h * 2);
-	if (!srcImage) {
-		fprintf(stderr, "Can not allocate memory for temp data\n");
-		return;
-	}
-	dstImage = &srcBuffer[img_offset+sizeof(tim_size_t)];
-
-	memcpy(srcImage, dstImage, (w-2)*(h-2)*2);
-	memset(dstImage, 0, w*h*2);
-
-	srcRow = (Uint16 *) srcImage;
-	dstRow = (Uint16 *) dstImage;
-	dstRow += 2 + w*2;
+	srcImage = dstImage = (Uint16 *) (&((Uint8 *) srcBuffer)[img_offset+sizeof(tim_size_t)]);
+	srcImage += 2 + w*2;
 	for (y=0; y<h-4; y++) {
-		memcpy(dstRow, srcRow, (w-4)*2);
-		srcRow += w-4;
-		dstRow += w;
+		memcpy(dstImage, srcImage, (w-4)*2);
+		srcImage += w;
+		dstImage += w-4;
 	}
-
-	free(srcImage);
 }
