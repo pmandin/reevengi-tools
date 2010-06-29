@@ -598,7 +598,9 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 		}
 
 		if (md5_checks[i].found) {
-			printf("File %s already dumped\n", md5_checks[i].filename);
+			if (!extract_src) {
+				printf("File %s already dumped\n", md5_checks[i].filename);
+			}
 			return;
 		}
 
@@ -608,22 +610,24 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 		break;
 	}
 
-	switch(file_type) {
-		case FILE_TIM_4:
-			printf("Sector %d: 4 bits TIM image\n",start);
-			break;
-		case FILE_TIM_8:
-			printf("Sector %d: 8 bits TIM image\n",start);
-			break;
-		case FILE_TIM_16:
-			printf("Sector %d: 16 bits TIM image\n",start);
-			break;
-		case FILE_EMD:
-			printf("Sector %d: EMD file\n",start);
-			break;
-		case FILE_DO3:
-			printf("Sector %d: DO3 file\n",start);
-			break;
+	if (!extract_src) {
+		switch(file_type) {
+			case FILE_TIM_4:
+				printf("Sector %d: 4 bits TIM image\n",start);
+				break;
+			case FILE_TIM_8:
+				printf("Sector %d: 8 bits TIM image\n",start);
+				break;
+			case FILE_TIM_16:
+				printf("Sector %d: 16 bits TIM image\n",start);
+				break;
+			case FILE_EMD:
+				printf("Sector %d: EMD file\n",start);
+				break;
+			case FILE_DO3:
+				printf("Sector %d: DO3 file\n",start);
+				break;
+		}
 	}
 
 	if (extract_files) {
