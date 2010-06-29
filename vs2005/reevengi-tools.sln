@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract_bin", "extract_bin.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iso_search", "iso_search.vcproj", "{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "file2pak", "file2pak.vcproj", "{B93603E0-0C9B-4760-9228-340B23D8C75A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -67,6 +69,10 @@ Global
 		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Debug|Win32.Build.0 = Debug|Win32
 		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Release|Win32.ActiveCfg = Release|Win32
 		{8B2A2A08-F2F8-4A4F-9AE5-1B8106182158}.Release|Win32.Build.0 = Release|Win32
+		{B93603E0-0C9B-4760-9228-340B23D8C75A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B93603E0-0C9B-4760-9228-340B23D8C75A}.Debug|Win32.Build.0 = Debug|Win32
+		{B93603E0-0C9B-4760-9228-340B23D8C75A}.Release|Win32.ActiveCfg = Release|Win32
+		{B93603E0-0C9B-4760-9228-340B23D8C75A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
