@@ -1,7 +1,9 @@
 /*
 	PAK file packer
+	This is a variant of LZW
 
 	Copyright (C) 2010	Patrice Mandin
+	Copyright (C) 1989	Mark R. Nelson
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -152,39 +154,50 @@ static void curstr_set(Uint8 new_char)
 	curstr_addchar(new_char);
 }
 
+static int output_bit_count = 0;
+static Uint32 output_bit_buffer = 0;
+
 static void pak_write_bits(Uint32 value, int num_bits)
 {
-	if ((dstPointer==NULL) || (dstOffset>=dstBufLen)) {
-		dstBufLen += CHUNK_SIZE;
-		dstPointer = realloc(dstPointer, dstBufLen);
-		if (dstPointer==NULL) {
-			fprintf(stderr, "pak: can not allocate %d bytes\n", dstBufLen);
-			return;
+	output_bit_buffer |= (Uint32) value << (32-num_bits-output_bit_count);
+	output_bit_count += num_bits;
+
+	while (output_bit_count>=8) {
+		if ((dstPointer==NULL) || (dstOffset>=dstBufLen)) {
+			dstBufLen += CHUNK_SIZE;
+			dstPointer = realloc(dstPointer, dstBufLen);
+			if (dstPointer==NULL) {
+				fprintf(stderr, "pak: can not allocate %d bytes\n", dstBufLen);
+				return;
+			}
 		}
+
+		dstPointer[dstOffset++] = output_bit_buffer >> 24;
+		output_bit_buffer <<= 8;
+		output_bit_count -= 8;
 	}
+}
 
-	while (--num_bits>=0) {
-		Uint8 mask = 1<<dstBit;
-
-		dstPointer[dstOffset] &= ~mask;
-		dstPointer[dstOffset] |= ((value>>num_bits) & 1)<<dstBit;
-
-		if (--dstBit<0) {
-			dstBit=7;
-			++dstOffset;
-		}
-	}
+static int
+is_pot(unsigned x)
+{
+   return (x & (x - 1)) == 0;
 }
 
 void pak_pack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 {
 	Uint8 src_char;
 	int i, dict_str, dict_strandchar;
+	Uint32 srclen, srcOffset = 0;
 
 	*dstBufPtr = dstPointer = NULL;
 	*dstLength = dstBufLen = dstOffset = 0;
 	dstBit = 7;
 	curstr_len = 0;
+
+	SDL_RWseek(src, 0, RW_SEEK_END);
+	srclen = SDL_RWtell(src);
+	SDL_RWseek(src, 0, RW_SEEK_SET);
 
 	/* Init base dict */
 	memset(dict, 0, sizeof(dict));
@@ -196,10 +209,9 @@ void pak_pack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 	/* While character in source */
 	for (;;) {
 		if ( SDL_RWread( src, &src_char, 1, 1 ) <= 0) {
-			/* Output end of stream */
-			pak_write_bits(LZW_STOP, out_code_bits);
 			break;
 		}
+		++srcOffset;
 
 		/* Generate new string = cur_string+src_char */
 		dict_genstr(src_char);
@@ -211,22 +223,34 @@ void pak_pack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 			/* cur_string += src_char */
 			curstr_addchar(src_char);
 		} else {
+			/* Need more bits ? */
+			if (is_pot(out_code)) {
+				pak_write_bits(LZW_NEXT, out_code_bits);
+				++out_code_bits;
+			}
+
 			/* write cur_string index to output */
 			pak_write_bits(dict_str, out_code_bits);
 
 			/* add cur_string+src_char to dict */
 			++out_code;
 
-			/* Need more bits ? */
-			if ((out_code && (out_code-1))==0) {
-				pak_write_bits(LZW_NEXT, out_code_bits);
-				++out_code_bits;
-			}
-
 			/* cur_string = src_char */
 			curstr_set(src_char);
 		}
+
+		if ((srcOffset & 31)==0) {
+			printf("%d %%\r", (srcOffset*100)/srclen);
+		}
 	}
+	printf("\n");
+
+	/* Output last code */
+	pak_write_bits(dict_strandchar, out_code_bits);
+	/* Output end of stream */
+	pak_write_bits(LZW_STOP, out_code_bits);
+	/* Flush remaining bits */
+	pak_write_bits(0, output_bit_count+8);
 
 	/* Free stuff */
 	if (curstr) {
@@ -243,34 +267,3 @@ void pak_pack(SDL_RWops *src, Uint8 **dstBufPtr, int *dstLength)
 	*dstBufPtr = (Uint8 *) dstPointer;
 	*dstLength = dstOffset;
 }
-
-/*
-input:
-10
-00
-00
-00
-02
-00
-00
-00
-00
-58
-02
-00
-00
-00
-f0
-00
-
-output:
-08 00 20 80 28 24 10
-
-000010000	0x10
-000000000	0x00
-100000100	0x104	= 0x00,0x00
-000000010	0x02
-100000100	0x104
-100000100	0x104
-00
-*/

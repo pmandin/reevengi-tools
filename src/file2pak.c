@@ -1,7 +1,7 @@
 /*
 	PAK file packer
 
-	Copyright (C) 2009-2010	Patrice Mandin
+	Copyright (C) 2010	Patrice Mandin
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -88,9 +88,9 @@ int convert_image(const char *filename)
 	SDL_RWclose(src);
 
 	if (dstBuffer && dstBufLen) {
-		/*if (remove4pix) {
+		if (remove4pix) {
 			remove_4_pixels(&dstBuffer, &dstBufLen);
-		}*/
+		}
 
 		save_pak(filename, dstBuffer, dstBufLen);
 
