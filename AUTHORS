@@ -23,4 +23,8 @@ Independent JPEG Group's software
 
 - MD5
 L. Peter Deutsch
-http://userpages.umbc.edu/~mabzug1/cs/md5/md5.html
+  http://userpages.umbc.edu/~mabzug1/cs/md5/md5.html
+
+- LZW packer
+Mark R. Nelson
+  http://marknelson.us/1989/10/01/lzw-data-compression/

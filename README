@@ -39,6 +39,12 @@ pak2tim:	Depack Resident Evil PC PAK image files.
 		Use '-r4' command line parameter for images that are stored with
 		4 pixels less.
 
+file2pak:	Pack Resident Evil PC PAK image files.
+		The result is saved to a PAK file.
+
+		Use '-r4' command line parameter for images that are stored with
+		4 pixels less.
+
 pix2bmp:	Convert Resident Evil PC PIX image files.
 		The result is saved to a BMP image.
 

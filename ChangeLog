@@ -8,6 +8,9 @@ v 0.5
 - pak2tim: Add -r4 command line param for images stored with 4 pixels less on
   their border.
 - adt2img: Add -noreorg command line param to keep depacked image as is.
+- file2pak: Added pak file packer.
+- file2pak: Add -r4 command line param for images stored with 4 pixels less on
+  their border.
 
 v 0.4
 
