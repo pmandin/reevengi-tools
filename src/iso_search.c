@@ -862,21 +862,25 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 	}
 
 	if (!extract_src) {
+		const char *filename = "";
+		if (found != -1) {
+			filename = md5_checks[i].filename;
+		}
 		switch(file_type) {
 			case FILE_TIM_4:
-				printf("Sector %d: 4 bits TIM image\n",start);
+				printf("Sector %d: 4 bits TIM image %s\n",start, filename);
 				break;
 			case FILE_TIM_8:
-				printf("Sector %d: 8 bits TIM image\n",start);
+				printf("Sector %d: 8 bits TIM image %s\n",start, filename);
 				break;
 			case FILE_TIM_16:
-				printf("Sector %d: 16 bits TIM image\n",start);
+				printf("Sector %d: 16 bits TIM image %s\n",start, filename);
 				break;
 			case FILE_EMD:
-				printf("Sector %d: EMD file\n",start);
+				printf("Sector %d: EMD file %s\n",start, filename);
 				break;
 			case FILE_DO3:
-				printf("Sector %d: DO3 file\n",start);
+				printf("Sector %d: DO3 file %s\n",start, filename);
 				break;
 		}
 	}
