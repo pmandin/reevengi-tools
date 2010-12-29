@@ -53,7 +53,7 @@ typedef struct {
 
 /*--- Constants ---*/
 
-md5_check_t md5_checks[]={
+md5_check_t md5_checks_re3[]={
 	{"3199387aa01f9b4483859d7bdff1ba99","data/etc/capcom.tim", 0},
 	{"e66a2dd333f61ba00359b070c5f55e47","data/etc/continue.tim", 0},
 	{"ee67bc522607a3c707d0be2b6215a76d","data/etc/eidos.tim", 0},
@@ -357,6 +357,245 @@ md5_check_t md5_checks[]={
 	{"0166fe0b59d0ccd56ff6370a20d5cbe2","room/emd08/em3b.tim", 0}
 };
 
+md5_check_t md5_checks_re2[]={
+	{"8479ebef2e5e49489ece15227620f814","pl0/emd0/em010.emd", 0},
+	{"4385f25501af1b41eb87df27ac515e26","pl0/emd0/em010.tim", 0},
+	{"0594f2f8e99daf0fe1d4c33ff296404e","pl0/emd0/em011.emd", 0},
+	{"1bd30c3c9d2d34b538f71fe0daac039a","pl0/emd0/em011.tim", 0},
+	{"3c2cbc1ddfeae4dc9809ca6ff7593a3d","pl0/emd0/em012.emd", 0},
+	{"478d50899cab520e569f1b4790acc74d","pl0/emd0/em012.tim", 0},
+	{"57160c3b92a876daec05b09e040ec894","pl0/emd0/em013.emd", 0},
+	{"6b60ee48d12032a6154b5bf8b54f9b15","pl0/emd0/em013.tim", 0},
+	{"8e7024afb96cbc7a2359dbe2b5a750aa","pl0/emd0/em015.emd", 0},
+	{"54b016b6078faf327f7940d54f35bb53","pl0/emd0/em015.tim", 0},
+	{"38cb59dfbb944fdaeb3f329782011f6a","pl0/emd0/em016.emd", 0},
+	{"5cdf267b2e7aaca4150bfa890cc98848","pl0/emd0/em016.tim", 0},
+	{"d83098df3592f75997762b1d009aeb66","pl0/emd0/em017.emd", 0},
+	{"e87820d85d8c14526f2a7594c77d83e7","pl0/emd0/em017.tim", 0},
+	{"7ea5c9e93671c06cde44660b188f9486","pl0/emd0/em018.emd", 0},
+	{"eded3183637af0bdff389fd47c0871f6","pl0/emd0/em018.tim", 0},
+	{"7ea5c9e93671c06cde44660b188f9486","pl0/emd0/em01e.emd", 0},
+	{"81da2b41c60639ff7bca00d15385ca16","pl0/emd0/em01e.tim", 0},
+	{"7ea5c9e93671c06cde44660b188f9486","pl0/emd0/em01f.emd", 0},
+	/*{"81da2b41c60639ff7bca00d15385ca16","pl0/emd0/em01f.tim", 0},*/
+	{"a9ca56311527a0f0780b8f790e521f1b","pl0/emd0/em020.emd", 0},
+	{"e989eff61ae9451875d7bb811d8f84ab","pl0/emd0/em020.tim", 0},
+	{"bc370bac2306e3b716db6c6c4f3077cc","pl0/emd0/em021.emd", 0},
+	{"9dace0a69e32b1a4ef7638a5847bc235","pl0/emd0/em021.tim", 0},
+	{"09aa186fd0d17cd256a4cce6980a021e","pl0/emd0/em022.emd", 0},
+	{"cb66446c89e7de18fc8954d8cf46b90e","pl0/emd0/em022.tim", 0},
+	{"9673f75fb713ef5947232b6c32b37242","pl0/emd0/em023.emd", 0},
+	{"37dd53a15bae3a104fb35c7589276c1c","pl0/emd0/em023.tim", 0},
+	{"7b4ff1861a79e4bc1341aee310755101","pl0/emd0/em024.emd", 0},
+	{"672431dfacf710b6b5b1fdb5b88bcf24","pl0/emd0/em024.tim", 0},
+	{"8b91976d410b964b87580ff384a8901a","pl0/emd0/em025.emd", 0},
+	{"8ef6d0faef12f3f4f30e3f23b0f76457","pl0/emd0/em025.tim", 0},
+	{"97949726ee43871544c00e3455ba1e1d","pl0/emd0/em026.emd", 0},
+	{"6ea27dfbb8388f5fd7d1e150eeebfc30","pl0/emd0/em026.tim", 0},
+	{"6f50669cfec2e783dddab5e2e59b8ece","pl0/emd0/em027.emd", 0},
+	{"c6c2d650d18a58b94c2f75d544806bf0","pl0/emd0/em027.tim", 0},
+	{"08fe2e5c3c96a9922e0ac339e119faec","pl0/emd0/em028.emd", 0},
+	{"8fc09baefbf3cfbd3e38a5492ce45df9","pl0/emd0/em028.tim", 0},
+	{"a3c290ffa3cfd425ee939ab0c826378f","pl0/emd0/em029.emd", 0},
+	{"12061e2481721831d15ff784dc8eea8a","pl0/emd0/em029.tim", 0},
+	{"0cc92755c016333f69e0069eb413ce15","pl0/emd0/em02a.emd", 0},
+	{"b93c27aa658957ff7ff1f047453d0cb8","pl0/emd0/em02a.tim", 0},
+	{"40b9b0cc398b6ff8573d95ac31fbe7aa","pl0/emd0/em02b.emd", 0},
+	{"f8013ea530c5b1b54e97c60f728a2a87","pl0/emd0/em02b.tim", 0},
+	{"3dceb40786c3b340ee1ccfbea181ee2c","pl0/emd0/em02c.emd", 0},
+	{"af3a30ec501813db390fb2954c55c4ae","pl0/emd0/em02c.tim", 0},
+	{"39d093569618311805c03ce9a1ef67e7","pl0/emd0/em02d.emd", 0},
+	{"c965e1faa886bde5f873a4d92da0b35b","pl0/emd0/em02d.tim", 0},
+	{"da1a245c7a3e11fdbe228d099ca10893","pl0/emd0/em02e.emd", 0},
+	{"597393acf844348b6ae01232c3d0e9a6","pl0/emd0/em02e.tim", 0},
+	{"762f6f048607c3eebf1280714f55e06f","pl0/emd0/em02f.emd", 0},
+	{"75e52e00a5f6a8d1c00963fd8a155a35","pl0/emd0/em02f.tim", 0},
+	{"aa67358d9f8ecc7e4588c262b8d287ec","pl0/emd0/em030.emd", 0},
+	{"e203e27ca42c6929d6e783c53fe36b07","pl0/emd0/em030.tim", 0},
+	{"9eaf491b7196a6f64e00dbb98fab8d1f","pl0/emd0/em031.emd", 0},
+	{"abf89ee4772dc4b0be5f61d840f2338f","pl0/emd0/em031.tim", 0},
+	{"043ae92f189c8270fdb59a049a0c5e43","pl0/emd0/em033.emd", 0},
+	{"a03ef4b1a217bb620ed723cdbc2f4456","pl0/emd0/em033.tim", 0},
+	{"034cb7b8b67df59c38fda499309fe9a5","pl0/emd0/em034.emd", 0},
+	{"67d5f6322485677a7e43c8ac2cac1800","pl0/emd0/em034.tim", 0},
+	{"3a49b091f8aded3c93540856349f5c5d","pl0/emd0/em036.emd", 0},
+	{"274087f2c77f1363efd1cb2a841211e9","pl0/emd0/em036.tim", 0},
+	{"22756bc25cfda5ce4233e2028fa5941a","pl0/emd0/em037.emd", 0},
+	{"e3c118c118921ffb90480f493a6c3e64","pl0/emd0/em037.tim", 0},
+	{"ec318c6e6f94dedb2187cd81a45a0637","pl0/emd0/em038.emd", 0},
+	{"58b1e69b04cbcf9cdeecc6ef63075b13","pl0/emd0/em038.tim", 0},
+	{"da1a245c7a3e11fdbe228d099ca10893","pl0/emd0/em039.emd", 0},
+	{"50edab0ce1d66682b2c5600ce592f67a","pl0/emd0/em039.tim", 0},
+	{"c084ef69626b557fcb6324f45f40f5fd","pl0/emd0/em03A.emd", 0},
+	{"e086b31a3f3a0eaaea7daeb24952e6ec","pl0/emd0/em03A.tim", 0},
+	{"75189ca3adf7e8b01be9f00810ffc985","pl0/emd0/em03b.emd", 0},
+	{"d51a0fddd0d785b7b4918da7615e4619","pl0/emd0/em03b.tim", 0},
+	{"dd592c77fb2eadd6259046930682ed4f","pl0/emd0/em03e.emd", 0},
+	{"e0fd7b02739b8f2ba7b363cd27868ef0","pl0/emd0/em03e.tim", 0},
+	{"bd3ca4f4c45a1b38db7c306744579ae5","pl0/emd0/em03f.emd", 0},
+	{"34be3c0203aed4a7f9bb504b7ab95976","pl0/emd0/em03f.tim", 0},
+	{"c68e845ffb355b5dbdb0220f1d457718","pl0/emd0/em040.emd", 0},
+	{"e064a33abaa0ea2e037f2df3c8684586","pl0/emd0/em040.tim", 0},
+	{"90e56a51ee2c250b5c8552efaa627a1e","pl0/emd0/em041.emd", 0},
+	{"50c153de82d122a1b44e10db267ff015","pl0/emd0/em041.tim", 0},
+	{"7da29a58770816df6d7d1dc31f6a63ac","pl0/emd0/em042.emd", 0},
+	{"9845a7b6df4cbc7471a404144d373b03","pl0/emd0/em042.tim", 0},
+	{"90e56a51ee2c250b5c8552efaa627a1e","pl0/emd0/em043.emd", 0},
+	{"77a7d106562cb9530eabb8f722f18732","pl0/emd0/em043.tim", 0},
+	{"dac46b9373ae893ac862da275abda750","pl0/emd0/em044.emd", 0},
+	{"1e9adf1aa2301634d4846f1010b9e4f8","pl0/emd0/em044.tim", 0},
+	{"b56695f236d17706abdcdbf18318cdf4","pl0/emd0/em045.emd", 0},
+	{"01651b5abb5efe846a078f59ae048688","pl0/emd0/em045.tim", 0},
+	{"dac46b9373ae893ac862da275abda750","pl0/emd0/em046.emd", 0},
+	{"c3886b32d5dddbc7a73bca3ef3b2f3df","pl0/emd0/em046.tim", 0},
+	{"88ca733bfe6ee5aacda66e6ecf47dfe1","pl0/emd0/em047.emd", 0},
+	{"cbf238857adba90a47f364c48fcddaf2","pl0/emd0/em047.tim", 0},
+	{"63dd2c1b864c3d9a98e49e278df6a992","pl0/emd0/em048.emd", 0},
+	{"bccefccabaaf5839e7e19d413db6a9f1","pl0/emd0/em048.tim", 0},
+	/*{"88ca733bfe6ee5aacda66e6ecf47dfe1","pl0/emd0/em049.emd", 0},*/
+	{"f556ba26e51e97c26af0e7d3e919ee16","pl0/emd0/em049.tim", 0},
+	{"8e9c72a9d3733bcd0ed257808b85bf9d","pl0/emd0/em04a.emd", 0},
+	{"4d0a6328f194e4f9386200f1582b905a","pl0/emd0/em04a.tim", 0},
+	{"f0c3ca390cc4be5579c5320b809b7299","pl0/emd0/em04b.emd", 0},
+	{"374a746bf9ece6544e3d6fe234a9e698","pl0/emd0/em04b.tim", 0},
+	{"710c76fcdd808ca2dc1d0f2f3aee04a7","pl0/emd0/em04c.tim", 0},
+	{"7f1cc178056133ae506fecc721f02e6c","pl0/emd0/em04f.emd", 0},
+	{"a8b1f204345315c69062a6836891cb59","pl0/emd0/em04f.tim", 0},
+	{"e3f108230e364c8eb3730500bb70b2e7","pl0/emd0/em050.emd", 0},
+	{"97836541381842f855415f271661e214","pl0/emd0/em050.tim", 0},
+	{"eb11c964a87eb2ed8009a026098e406a","pl0/emd0/em051.emd", 0},
+	{"7ac74ba3ea23345671347930431fda6c","pl0/emd0/em051.tim", 0},
+	{"e3f108230e364c8eb3730500bb70b2e7","pl0/emd0/em054.emd", 0},
+	{"e69a5156b1834285d0a0c3e61abae6b7","pl0/emd0/em054.tim", 0},
+	{"9217988693cf44925fb1d0aaf8993c21","pl0/emd0/em055.emd", 0},
+	{"7b6d631b69d71c73adaffd05a5510a7d","pl0/emd0/em055.tim", 0},
+	{"5489924c864d3e10d6a5f9048af4b393","pl0/emd0/em058.emd", 0},
+	{"e4fea702c120d38842d998fbfcede435","pl0/emd0/em058.tim", 0},
+	{"6525392db19f11575f3ac684f4005bac","pl0/emd0/em059.emd", 0},
+	{"62a20d18355fdfe6a84a5de70fa97533","pl0/emd0/em059.tim", 0},
+	{"5ed409a2f1d755dd5117912d6148a71a","pl0/emd0/em05a.emd", 0},
+	{"8dc47a09016872406d7c9a6426aee2e4","pl0/emd0/em05a.tim", 0},
+	{"b5e0f6d1e1f00b3dd93d938045849ef6","pl0/emd0/em13a.tim", 0},
+
+	{"fbbeea85c53cb0b52a155ae54915feab","pl1/emd1/em110.emd", 0},
+	/*{"4385f25501af1b41eb87df27ac515e26","pl1/emd1/em110.tim", 0},*/
+	{"281187a3081824c12fbcf73aeb759df9","pl1/emd1/em111.emd", 0},
+	/*{"1bd30c3c9d2d34b538f71fe0daac039a","pl1/emd1/em111.tim", 0},*/
+	{"601059eb87629150b4bf666419eed0a0","pl1/emd1/em112.emd", 0},
+	/*{"478d50899cab520e569f1b4790acc74d","pl1/emd1/em112.tim", 0},*/
+	{"14e19d90eba7586f51d6641530a522f0","pl1/emd1/em113.emd", 0},
+	/*{"6b60ee48d12032a6154b5bf8b54f9b15","pl1/emd1/em113.tim", 0},*/
+	{"4a77d3cec668dfc1a1d5ab22afa2d797","pl1/emd1/em115.emd", 0},
+	/*{"54b016b6078faf327f7940d54f35bb53","pl1/emd1/em115.tim", 0},*/
+	{"c9a5ba480c01de3ce99de0ee591b0a9d","pl1/emd1/em116.emd", 0},
+	/*{"5cdf267b2e7aaca4150bfa890cc98848","pl1/emd1/em116.tim", 0},*/
+	{"4eb367f155f864ee82ee742b450ec43c","pl1/emd1/em117.emd", 0},
+	/*{"e87820d85d8c14526f2a7594c77d83e7","pl1/emd1/em117.tim", 0},*/
+	{"f157bd9bf9f7d917d8d15ed7601bcbfc","pl1/emd1/em118.emd", 0},
+	/*{"eded3183637af0bdff389fd47c0871f6","pl1/emd1/em118.tim", 0},*/
+	{"f157bd9bf9f7d917d8d15ed7601bcbfc","pl1/emd1/em11e.emd", 0},
+	/*{"81da2b41c60639ff7bca00d15385ca16","pl1/emd1/em11e.tim", 0},*/
+	{"f157bd9bf9f7d917d8d15ed7601bcbfc","pl1/emd1/em11f.emd", 0},
+	/*{"81da2b41c60639ff7bca00d15385ca16","pl1/emd1/em11f.tim", 0},*/
+	{"b95b5b435552e86c3b35da3036f12b5c","pl1/emd1/em120.emd", 0},
+	/*{"e989eff61ae9451875d7bb811d8f84ab","pl1/emd1/em120.tim", 0},*/
+	{"356c4f4855b871398274922d8794f1aa","pl1/emd1/em121.emd", 0},
+	/*{"9dace0a69e32b1a4ef7638a5847bc235","pl1/emd1/em121.tim", 0},*/
+	{"bf168891667fcf313a46c177b4bc5cad","pl1/emd1/em122.emd", 0},
+	/*{"cb66446c89e7de18fc8954d8cf46b90e","pl1/emd1/em122.tim", 0},*/
+	{"05e49a8710100e53b4765ed867e252f9","pl1/emd1/em123.emd", 0},
+	/*{"37dd53a15bae3a104fb35c7589276c1c","pl1/emd1/em123.tim", 0},*/
+	{"7b4ff1861a79e4bc1341aee310755101","pl1/emd1/em124.emd", 0},
+	/*{"672431dfacf710b6b5b1fdb5b88bcf24","pl1/emd1/em124.tim", 0},*/
+	{"8b91976d410b964b87580ff384a8901a","pl1/emd1/em125.emd", 0},
+	/*{"8ef6d0faef12f3f4f30e3f23b0f76457","pl1/emd1/em125.tim", 0},*/
+	{"fcd60f4d49d46b86ed6b3ae116a81594","pl1/emd1/em126.emd", 0},
+	/*{"6ea27dfbb8388f5fd7d1e150eeebfc30","pl1/emd1/em126.tim", 0},*/
+	{"71b1caa84ddbca135fb14a0437c1042e","pl1/emd1/em127.emd", 0},
+	/*{"c6c2d650d18a58b94c2f75d544806bf0","pl1/emd1/em127.tim", 0},*/
+	{"ba0fb709c16dda6444097af318c1ff39","pl1/emd1/em128.emd", 0},
+	/*{"8fc09baefbf3cfbd3e38a5492ce45df9","pl1/emd1/em128.tim", 0},*/
+	{"d7c505ceee8a4d782a592ac8099c8634","pl1/emd1/em129.emd", 0},
+	/*{"12061e2481721831d15ff784dc8eea8a","pl1/emd1/em129.tim", 0},*/
+	{"b53e26dd014e48026d3e424653d865ab","pl1/emd1/em12a.emd", 0},
+	/*{"b93c27aa658957ff7ff1f047453d0cb8","pl1/emd1/em12a.tim", 0},*/
+	{"a896bb6f7ff1592ae8057e664b4d60d8","pl1/emd1/em12b.emd", 0},
+	/*{"f8013ea530c5b1b54e97c60f728a2a87","pl1/emd1/em12b.tim", 0},*/
+	{"37a2e00c405e30da738a3bcf3807df02","pl1/emd1/em12c.emd", 0},
+	/*{"af3a30ec501813db390fb2954c55c4ae","pl1/emd1/em12c.tim", 0},*/
+	{"7e03d04e46fcf21f5dae9954e612a41c","pl1/emd1/em12d.emd", 0},
+	/*{"c965e1faa886bde5f873a4d92da0b35b","pl1/emd1/em12d.tim", 0},*/
+	{"7cae35510f0da78dcb1a4aa81416dd3c","pl1/emd1/em12e.emd", 0},
+	/*{"597393acf844348b6ae01232c3d0e9a6","pl1/emd1/em12e.tim", 0},*/
+	/*{"762f6f048607c3eebf1280714f55e06f","pl1/emd1/em12f.emd", 0},*/
+	/*{"75e52e00a5f6a8d1c00963fd8a155a35","pl1/emd1/em12f.tim", 0},*/
+	{"f51a209ae70951c7ca351e75b6321fb5","pl1/emd1/em130.emd", 0},
+	/*{"e203e27ca42c6929d6e783c53fe36b07","pl1/emd1/em130.tim", 0},*/
+	{"e01ad6106c9c38c064e9560d8b7cd282","pl1/emd1/em131.emd", 0},
+	/*{"abf89ee4772dc4b0be5f61d840f2338f","pl1/emd1/em131.tim", 0},*/
+	{"990fb36ecf6a3ee6649080cbf109475e","pl1/emd1/em133.emd", 0},
+	/*{"a03ef4b1a217bb620ed723cdbc2f4456","pl1/emd1/em133.tim", 0},*/
+	{"1f0a78e4d7aa767afb994fbf59f4f21d","pl1/emd1/em134.emd", 0},
+	/*{"67d5f6322485677a7e43c8ac2cac1800","pl1/emd1/em134.tim", 0},*/
+	{"3a49b091f8aded3c93540856349f5c5d","pl1/emd1/em136.emd", 0},
+	/*{"274087f2c77f1363efd1cb2a841211e9","pl1/emd1/em136.tim", 0},*/
+	{"9ca54ae9d3019f39f3c3986e37c0c6fb","pl1/emd1/em137.emd", 0},
+	/*{"e3c118c118921ffb90480f493a6c3e64","pl1/emd1/em137.tim", 0},*/
+	{"ec318c6e6f94dedb2187cd81a45a0637","pl1/emd1/em138.emd", 0},
+	/*{"58b1e69b04cbcf9cdeecc6ef63075b13","pl1/emd1/em138.tim", 0},*/
+	{"7cae35510f0da78dcb1a4aa81416dd3c","pl1/emd1/em139.emd", 0},
+	/*{"50edab0ce1d66682b2c5600ce592f67a","pl1/emd1/em139.tim", 0},*/
+	{"527b4578a9ce18b17cbe21577d221c93","pl1/emd1/em13a.emd", 0},
+	/*{"e086b31a3f3a0eaaea7daeb24952e6ec","pl1/emd1/em13a.tim", 0},*/
+	{"75189ca3adf7e8b01be9f00810ffc985","pl1/emd1/em13b.emd", 0},
+	/*{"d51a0fddd0d785b7b4918da7615e4619","pl1/emd1/em13b.tim", 0},*/
+	{"dd592c77fb2eadd6259046930682ed4f","pl1/emd1/em13e.emd", 0},
+	/*{"e0fd7b02739b8f2ba7b363cd27868ef0","pl1/emd1/em13e.tim", 0},*/
+	{"bd3ca4f4c45a1b38db7c306744579ae5","pl1/emd1/em13f.emd", 0},
+	/*{"34be3c0203aed4a7f9bb504b7ab95976","pl1/emd1/em13f.tim", 0},*/
+	/*{"c68e845ffb355b5dbdb0220f1d457718","pl1/emd1/em140.emd", 0},*/
+	/*{"e064a33abaa0ea2e037f2df3c8684586","pl1/emd1/em140.tim", 0},*/
+	{"2743183673067f15b56a431e7834a688","pl1/emd1/em141.emd", 0},
+	/*{"50c153de82d122a1b44e10db267ff015","pl1/emd1/em141.tim", 0},*/
+	{"b6ee62b485b3218aadb93a86bb17c049","pl1/emd1/em142.emd", 0},
+	/*{"9845a7b6df4cbc7471a404144d373b03","pl1/emd1/em142.tim", 0},*/
+	{"2743183673067f15b56a431e7834a688","pl1/emd1/em143.emd", 0},
+	/*{"77a7d106562cb9530eabb8f722f18732","pl1/emd1/em143.tim", 0},*/
+	/*{"dac46b9373ae893ac862da275abda750","pl1/emd1/em144.emd", 0},*/
+	/*{"1e9adf1aa2301634d4846f1010b9e4f8","pl1/emd1/em144.tim", 0},*/
+	/*{"b56695f236d17706abdcdbf18318cdf4","pl1/emd1/em145.emd", 0},*/
+	/*{"01651b5abb5efe846a078f59ae048688","pl1/emd1/em145.tim", 0},*/
+	/*{"dac46b9373ae893ac862da275abda750","pl1/emd1/em146.emd", 0},*/
+	/*{"c3886b32d5dddbc7a73bca3ef3b2f3df","pl1/emd1/em146.tim", 0},*/
+	/*{"88ca733bfe6ee5aacda66e6ecf47dfe1","pl1/emd1/em147.emd", 0},*/
+	/*{"cbf238857adba90a47f364c48fcddaf2","pl1/emd1/em147.tim", 0},*/
+	{"a8cff2b11a22f4e964ef03b51e8d51ff","pl1/emd1/em148.emd", 0},
+	/*{"bccefccabaaf5839e7e19d413db6a9f1","pl1/emd1/em148.tim", 0},*/
+	/*{"88ca733bfe6ee5aacda66e6ecf47dfe1","pl1/emd1/em149.emd", 0},*/
+	/*{"f556ba26e51e97c26af0e7d3e919ee16","pl1/emd1/em149.tim", 0},*/
+	{"29377fdfc788152e1e9fdc88fe446a10","pl1/emd1/em14a.emd", 0}
+	/*{"4d0a6328f194e4f9386200f1582b905a","pl1/emd1/em14a.tim", 0},*/
+	/*{"f0c3ca390cc4be5579c5320b809b7299","pl1/emd1/em14b.emd", 0},*/
+	/*{"374a746bf9ece6544e3d6fe234a9e698","pl1/emd1/em14b.tim", 0},*/
+	/*{"710c76fcdd808ca2dc1d0f2f3aee04a7","pl1/emd1/em14c.tim", 0},*/
+	/*{"7f1cc178056133ae506fecc721f02e6c","pl1/emd1/em14f.emd", 0},*/
+	/*{"a8b1f204345315c69062a6836891cb59","pl1/emd1/em14f.tim", 0},*/
+	/*{"e3f108230e364c8eb3730500bb70b2e7","pl1/emd1/em150.emd", 0},*/
+	/*{"97836541381842f855415f271661e214","pl1/emd1/em150.tim", 0},*/
+	/*{"eb11c964a87eb2ed8009a026098e406a","pl1/emd1/em151.emd", 0},*/
+	/*{"7ac74ba3ea23345671347930431fda6c","pl1/emd1/em151.tim", 0},*/
+	/*{"e3f108230e364c8eb3730500bb70b2e7","pl1/emd1/em154.emd", 0},*/
+	/*{"e69a5156b1834285d0a0c3e61abae6b7","pl1/emd1/em154.tim", 0},*/
+	/*{"9217988693cf44925fb1d0aaf8993c21","pl1/emd1/em155.emd", 0},*/
+	/*{"7b6d631b69d71c73adaffd05a5510a7d","pl1/emd1/em155.tim", 0},*/
+	/*{"5489924c864d3e10d6a5f9048af4b393","pl1/emd1/em158.emd", 0},*/
+	/*{"e4fea702c120d38842d998fbfcede435","pl1/emd1/em158.tim", 0},*/
+	/*{"6525392db19f11575f3ac684f4005bac","pl1/emd1/em159.emd", 0},*/
+	/*{"62a20d18355fdfe6a84a5de70fa97533","pl1/emd1/em159.tim", 0},*/
+	/*{"5ed409a2f1d755dd5117912d6148a71a","pl1/emd1/em15a.emd", 0},*/
+	/*{"8dc47a09016872406d7c9a6426aee2e4","pl1/emd1/em15a.tim", 0},*/
+};
+
 /*--- Variables ---*/
 
 /* Extract files */
@@ -364,6 +603,9 @@ static int extract_files = 0;
 
 /* Extract for source code */
 static int extract_src = 0;
+
+/* Extract RE3 by default */
+static int extract_version = 3;
 
 /*--- Functions prototypes ---*/
 
@@ -390,6 +632,9 @@ int main(int argc, char **argv)
 	}
 	if (param_check("-s",argc,argv)>=0) {
 		extract_src = 1;
+	}
+	if (param_check("-re2",argc,argv)>=0) {
+		extract_version = 2;
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO)<0) {
@@ -538,10 +783,11 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 {
 	Uint8 *buffer;
 	Uint32 length = DATA_LENGTH * (end-start);
-	int i, found;
+	int i, found, count;
 	char filename[16];
 	char *fileext = "%08x.bin";
 	SDL_RWops *dst;
+	md5_check_t *md5_checks = md5_checks_re3;
 
 	md5_state_t state;
 	md5_byte_t digest[16];
@@ -591,7 +837,12 @@ void extract_file(SDL_RWops *src, Uint32 start, Uint32 end, int block_size, int 
 	}
 
 	found = -1;
-	for (i=0; i<sizeof(md5_checks)/sizeof(md5_check_t); i++) {
+	count = sizeof(md5_checks_re3)/sizeof(md5_check_t);
+	if (extract_version == 2) {
+		count = sizeof(md5_checks_re2)/sizeof(md5_check_t);
+		md5_checks = md5_checks_re2;
+	}
+	for (i=0; i<count; i++) {
 		if (memcmp(md5_file, md5_checks[i].value, 32) != 0) {
 			/* Not this md5, continue */
 			continue;
