@@ -18,29 +18,23 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <libxml/xmlversion.h>
+#include <SDL.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <SDL.h>
-
 #include "file_functions.h"
-
-/*--- Structures ---*/
-
-/* Header for RE2 and RE3 EMD */
-typedef struct {
-	Uint32 offset;
-	Uint32 length;
-} emd_header_t;
+#include "emd_common.h"
 
 /*--- Functions prototypes ---*/
 
 int emdToXml(const char *filename);
 int getEmdVersion(Uint8 *src, Uint32 srcLen);
-int emd1ToXml(Uint8 *src);
-int emd2ToXml(Uint8 *src);
-int emd3ToXml(Uint8 *src);
+int emd1ToXml(Uint8 *src, Uint32 srcLen);
+int emd2ToXml(Uint8 *src, Uint32 srcLen);
+int emd3ToXml(Uint8 *src, Uint32 srcLen);
 
 /*--- Functions ---*/
 
@@ -59,7 +53,13 @@ int main(int argc, char **argv)
 	}
 	atexit(SDL_Quit);
 
+	LIBXML_TEST_VERSION
+	xmlInitParser();
+
 	retval = emdToXml(argv[argc-1]);
+
+	xmlCleanupParser();
+	xmlMemoryDump();
 
 	SDL_Quit();
 	return retval;
@@ -69,7 +69,7 @@ int emdToXml(const char *filename)
 {
 	SDL_RWops *src;
 	Uint8 *srcBuffer;
-	int srcBufLen;
+	int srcBufLen, gameVersion;
 	int retval = 1;
 
 	/* Read file in memory */
@@ -92,15 +92,16 @@ int emdToXml(const char *filename)
 	SDL_RWclose(src);
 
 	/* Detect which game version */
-	switch(getEmdVersion(srcBuffer, srcBufLen)) {
+	gameVersion = getEmdVersion(srcBuffer, srcBufLen);
+	switch(gameVersion) {
 		case 1:
-			retval = emd1ToXml(srcBuffer);
+			retval = emd1ToXml(srcBuffer, srcBufLen);
 			break;
 		case 2:
-			retval = emd2ToXml(srcBuffer);
+			retval = emd2ToXml(srcBuffer, srcBufLen);
 			break;
 		case 3:
-			retval = emd3ToXml(srcBuffer);
+			retval = emd3ToXml(srcBuffer, srcBufLen);
 			break;
 		default:
 			retval = 1;
@@ -117,7 +118,7 @@ int getEmdVersion(Uint8 *src, Uint32 srcLen)
 	Uint32 hdr_length = SDL_SwapLE32(emd_header->length);
 
 	/* RE1 does not have emd_header_t
-	 * so check if usable for RE2 or RE3 file */
+	 * so check if usable as RE2 or RE3 file */
 	if ((hdr_offsets + (hdr_length * sizeof(Uint32))) == srcLen) {
 		if (hdr_length == 8) {
 			/* RE2 */
@@ -131,19 +132,25 @@ int getEmdVersion(Uint8 *src, Uint32 srcLen)
 	return 1;
 }
 
-int emd1ToXml(Uint8 *src)
+/*--- RE1 EMD ---*/
+
+int emd1ToXml(Uint8 *src, Uint32 srcLen)
 {
 	printf("Detected RE1 EMD file\n");
 	return 1;
 }
 
-int emd2ToXml(Uint8 *src)
+/*--- RE2 EMD ---*/
+
+int emd2ToXml(Uint8 *src, Uint32 srcLen)
 {
 	printf("Detected RE2 EMD file\n");
 	return 1;
 }
 
-int emd3ToXml(Uint8 *src)
+/*--- RE3 EMD ---*/
+
+int emd3ToXml(Uint8 *src, Uint32 srcLen)
 {
 	printf("Detected RE3 EMD file\n");
 	return 1;

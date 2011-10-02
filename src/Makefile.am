@@ -43,7 +43,11 @@ iso_search_SOURCES = iso_search.c md5.c param.c
 iso_search_headers = md5.h background_tim.h
 
 emd2xml_SOURCES = emd2xml.c
+emd2xml_CFLAGS = $(LIBXML_CFLAGS) $(AM_CFLAGS)
+emd2xml_LDFLAGS = $(LIBXML_LIBS)
+
+emd2xml_headers = emd_common.h
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers) \
-	$(iso_search_headers) $(file2pak_headers)
+	$(iso_search_headers) $(file2pak_headers) $(emd2xml_headers)
