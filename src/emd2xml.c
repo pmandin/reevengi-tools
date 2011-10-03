@@ -40,6 +40,7 @@ void emd1AddSkeleton(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 void emd1AddArmature(xmlNodePtr root, emd_armature_header_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh);
 Uint32 emd1GetNumMovements(Uint8 *src, Uint32 srcLen);
 void emd1AddAnimation(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
+void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 
 int emd2ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 
@@ -171,8 +172,9 @@ int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
 	emd1AddAnimation(src, srcLen, node);
 
 	/* Meshes */
-	node = xmlNewNode(NULL, BAD_CAST "mesh");
+	node = xmlNewNode(NULL, BAD_CAST "model");
 	xmlAddChild(root, node);
+	emd1AddModel(src, srcLen, node);
 
 	/* TIM image */
 	node = xmlNewNode(NULL, BAD_CAST "tim");
@@ -338,6 +340,114 @@ void emd1AddAnimation(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 
 			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (frame>>16) & 0xffff);
 			xmlNewProp(node_frame, BAD_CAST "flags", buf);
+		}
+	}
+}
+
+void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
+{
+	xmlNodePtr node, node_vtx, node_nor, node_tri, node_tex, node_v;
+	xmlChar buf[32];
+	emd1_directory_t *emd1_dir = (emd1_directory_t *) (&src[srcLen-sizeof(emd1_directory_t)]);
+	emd1_model_header_t *model_hdr = (emd1_model_header_t *) &src[SDL_SwapLE32(emd1_dir->model)];
+	Uint8 *tmp = (Uint8 *) model_hdr;
+	emd1_model_mesh_t *mesh = (emd1_model_mesh_t *) &tmp[sizeof(emd1_model_header_t)];
+	int i, j;
+
+	for (i=0; i<SDL_SwapLE32(model_hdr->count); i++) {
+		emd_vertex4_t *vtx, *nor;
+		emd1_model_triangle_t *tri;
+
+		node = xmlNewNode(NULL, BAD_CAST "mesh");
+		xmlAddChild(root, node);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		/* Vertices */
+		tmp = (Uint8 *) mesh;
+		vtx= (emd_vertex4_t *) &tmp[SDL_SwapLE32(mesh[i].vtx_offset)];
+		for (j=0; j<SDL_SwapLE32(mesh[i].vtx_count); j++) {
+			node_vtx = xmlNewNode(NULL, BAD_CAST "vertex");
+			xmlAddChild(node, node_vtx);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", j);
+			xmlNewProp(node_vtx, BAD_CAST "id", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(vtx[j].x));
+			xmlNewProp(node_vtx, BAD_CAST "x", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(vtx[j].y));
+			xmlNewProp(node_vtx, BAD_CAST "y", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(vtx[j].z));
+			xmlNewProp(node_vtx, BAD_CAST "z", buf);
+		}
+
+		/* Normals */
+		tmp = (Uint8 *) mesh;
+		nor = (emd_vertex4_t *) &tmp[SDL_SwapLE32(mesh[i].nor_offset)];
+		for (j=0; j<SDL_SwapLE32(mesh[i].nor_count); j++) {
+			node_nor = xmlNewNode(NULL, BAD_CAST "normal");
+			xmlAddChild(node, node_nor);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", j);
+			xmlNewProp(node_nor, BAD_CAST "id", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(nor[j].x));
+			xmlNewProp(node_nor, BAD_CAST "x", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(nor[j].y));
+			xmlNewProp(node_nor, BAD_CAST "y", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(nor[j].z));
+			xmlNewProp(node_nor, BAD_CAST "z", buf);
+		}
+
+		/* Triangles */
+		tmp = (Uint8 *) mesh;
+		tri = (emd1_model_triangle_t *) &tmp[SDL_SwapLE32(mesh[i].tri_offset)];
+		for (j=0; j<SDL_SwapLE32(mesh[i].tri_count); j++) {
+			node_tri = xmlNewNode(NULL, BAD_CAST "triangle");
+			xmlAddChild(node, node_tri);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", j);
+			xmlNewProp(node_tri, BAD_CAST "id", buf);
+
+			node_tex = xmlNewNode(NULL, BAD_CAST "texture");
+			xmlAddChild(node_tri, node_tex);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (tri[j].page<<1) & 0xff);
+			xmlNewProp(node_tex, BAD_CAST "page", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].clutid & 3);
+			xmlNewProp(node_tex, BAD_CAST "clut", buf);
+
+			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+			xmlAddChild(node_tri, node_v);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v0);
+			xmlNewProp(node_v, BAD_CAST "v", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n0);
+			xmlNewProp(node_v, BAD_CAST "n", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu0);
+			xmlNewProp(node_v, BAD_CAST "tu", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tv0);
+			xmlNewProp(node_v, BAD_CAST "tv", buf);
+
+			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+			xmlAddChild(node_tri, node_v);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v1);
+			xmlNewProp(node_v, BAD_CAST "v", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n1);
+			xmlNewProp(node_v, BAD_CAST "n", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu1);
+			xmlNewProp(node_v, BAD_CAST "tu", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tv1);
+			xmlNewProp(node_v, BAD_CAST "tv", buf);
+
+			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+			xmlAddChild(node_tri, node_v);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v2);
+			xmlNewProp(node_v, BAD_CAST "v", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n2);
+			xmlNewProp(node_v, BAD_CAST "n", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu2);
+			xmlNewProp(node_v, BAD_CAST "tu", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tv2);
+			xmlNewProp(node_v, BAD_CAST "tv", buf);
 		}
 	}
 }

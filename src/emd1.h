@@ -31,7 +31,7 @@
 typedef struct {
 	Uint32	skeleton;
 	Uint32	animation;
-	Uint32	mesh;
+	Uint32	model;
 	Uint32	tim;
 } emd1_directory_t;
 
@@ -50,5 +50,35 @@ typedef struct {
 } emd1_anim_header_t;
 
 /* Mesh */
+typedef struct {
+	Uint32	length;
+	Uint32	unknown;
+	Uint32	count;
+} emd1_model_header_t;
+
+typedef struct {
+	Uint32	vtx_offset;
+	Uint32	vtx_count;
+	Uint32	nor_offset;
+	Uint32	nor_count;
+	Uint32	tri_offset;
+	Uint32	tri_count;
+	Uint32	dummy;
+} emd1_model_mesh_t;
+
+typedef struct {
+	Uint32 unknown;
+
+	Uint8 tu0,tv0;
+	Uint16 page;
+	Uint8 tu1,tv1;
+	Uint16 clutid;
+	Uint8 tu2,tv2;
+	Uint16 dummy;
+
+	Uint16	n0,v0;
+	Uint16	n1,v1;
+	Uint16	n2,v2;
+} emd1_model_triangle_t;
 
 #endif /* EMD1_H */
