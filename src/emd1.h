@@ -36,11 +36,6 @@
 
 /* Skeleton */
 typedef struct {
-	Uint16	num_mesh;
-	Uint16	offset;
-} emd1_skel_data_t;
-
-typedef struct {
 	emd_vertex3_t	pos;
 	emd_vertex3_t	speed;
 

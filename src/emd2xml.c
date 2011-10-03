@@ -37,7 +37,7 @@ int getEmdVersion(Uint8 *src, Uint32 srcLen);
 
 int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 void emd1AddSkeleton(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
-void emd1AddArmature(xmlNodePtr root, emd1_skel_data_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh);
+void emd1AddArmature(xmlNodePtr root, emd_armature_header_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh);
 
 int emd2ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 
@@ -184,14 +184,14 @@ void emd1AddSkeleton(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 	Uint8 *src_skel;
 	emd_skel_header_t *emd_skel_header;
 	emd_vertex3_t *emd_skel_relpos;
-	emd1_skel_data_t *emd_skel_data;
+	emd_armature_header_t *emd_skel_data;
 
 	hdr_offsets = (Uint32 *) (&src[srcLen-16]);
 	src_skel = &src[SDL_SwapLE32(hdr_offsets[EMD1_SKELETON])];
 
 	emd_skel_header = (emd_skel_header_t *) src_skel;
 	emd_skel_relpos = (emd_vertex3_t *) (&src_skel[sizeof(emd_skel_header_t)]);
-	emd_skel_data = (emd1_skel_data_t *) (&src_skel[SDL_SwapLE16(emd_skel_header->relpos_offset)]);
+	emd_skel_data = (emd_armature_header_t *) (&src_skel[SDL_SwapLE16(emd_skel_header->relpos_offset)]);
 
 	node = xmlNewNode(NULL, BAD_CAST "skeleton");
 	xmlAddChild(root, node);
@@ -199,7 +199,7 @@ void emd1AddSkeleton(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 	emd1AddArmature(node, emd_skel_data, emd_skel_relpos, 0);
 }
 
-void emd1AddArmature(xmlNodePtr root, emd1_skel_data_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh)
+void emd1AddArmature(xmlNodePtr root, emd_armature_header_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh)
 {
 	xmlNodePtr node;
 	xmlChar buf[32];

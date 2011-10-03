@@ -49,4 +49,9 @@ typedef struct {
 	Uint16	size;
 } emd_skel_header_t;
 
+typedef struct {
+	Uint16	num_mesh;
+	Uint16	offset;
+} emd_armature_header_t;
+
 #endif /* EMD_COMMON_H */
