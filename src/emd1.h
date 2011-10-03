@@ -25,14 +25,15 @@
 
 #include "emd_common.h"
 
-/*--- Defines ---*/
-
-#define EMD1_SKELETON 0
-#define EMD1_ANIMATION 1
-#define EMD1_MESH 2
-#define EMD1_TIM 3
-
 /*--- Structures ---*/
+
+/* Directory */
+typedef struct {
+	Uint32	skeleton;
+	Uint32	animation;
+	Uint32	mesh;
+	Uint32	tim;
+} emd1_directory_t;
 
 /* Skeleton */
 typedef struct {
@@ -43,6 +44,10 @@ typedef struct {
 } emd1_skel_anim_t;
 
 /* Animation */
+typedef struct {
+	Uint16	count;
+	Uint16	offset;
+} emd1_anim_header_t;
 
 /* Mesh */
 

@@ -43,10 +43,10 @@ typedef struct {
 
 /* Skeleton */
 typedef struct {
-	Uint16	relpos_offset;
-	Uint16	anim_offset;
+	Uint16	relpos_len;
+	Uint16	move_offset;
 	Uint16	count;
-	Uint16	size;
+	Uint16	move_size;
 } emd_skel_header_t;
 
 typedef struct {
