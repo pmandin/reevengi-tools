@@ -411,16 +411,16 @@ void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 
 			node_tex = xmlNewNode(NULL, BAD_CAST "texture");
 			xmlAddChild(node_tri, node_tex);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (tri[j].page<<1) & 0xff);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (SDL_SwapLE16(tri[j].page)<<1) & 0xff);
 			xmlNewProp(node_tex, BAD_CAST "page", buf);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].clutid & 3);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].clutid) & 3);
 			xmlNewProp(node_tex, BAD_CAST "clut", buf);
 
 			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
 			xmlAddChild(node_tri, node_v);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v0);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].v0));
 			xmlNewProp(node_v, BAD_CAST "v", buf);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n0);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].n0));
 			xmlNewProp(node_v, BAD_CAST "n", buf);
 			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu0);
 			xmlNewProp(node_v, BAD_CAST "tu", buf);
@@ -429,9 +429,9 @@ void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 
 			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
 			xmlAddChild(node_tri, node_v);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v1);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].v1));
 			xmlNewProp(node_v, BAD_CAST "v", buf);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n1);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].n1));
 			xmlNewProp(node_v, BAD_CAST "n", buf);
 			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu1);
 			xmlNewProp(node_v, BAD_CAST "tu", buf);
@@ -440,9 +440,9 @@ void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 
 			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
 			xmlAddChild(node_tri, node_v);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].v2);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].v2));
 			xmlNewProp(node_v, BAD_CAST "v", buf);
-			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].n2);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[j].n2));
 			xmlNewProp(node_v, BAD_CAST "n", buf);
 			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[j].tu2);
 			xmlNewProp(node_v, BAD_CAST "tu", buf);
