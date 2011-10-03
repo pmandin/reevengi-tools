@@ -35,12 +35,13 @@
 int emdToXml(const char *filename);
 int getEmdVersion(Uint8 *src, Uint32 srcLen);
 
-int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
+int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc, const char *filename);
 void emd1AddSkeleton(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 void emd1AddArmature(xmlNodePtr root, emd_armature_header_t *emd_skel_data, emd_vertex3_t *emd_skel_relpos, int start_mesh);
 Uint32 emd1GetNumMovements(Uint8 *src, Uint32 srcLen);
 void emd1AddAnimation(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
+void emd1AddTim(Uint8 *src, Uint32 srcLen, xmlNodePtr root, const char *filename);
 
 int emd2ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 
@@ -82,6 +83,7 @@ int emdToXml(const char *filename)
 	int srcBufLen, gameVersion;
 	int retval = 1;
 	xmlDoc *doc;
+	char *dst_filename;
 
 	/* Read file in memory */
 	src = SDL_RWFromFile(filename, "rb");
@@ -108,7 +110,7 @@ int emdToXml(const char *filename)
 	doc = xmlNewDoc(BAD_CAST "1.0");
 	switch(gameVersion) {
 		case 1:
-			retval = emd1ToXml(srcBuffer, srcBufLen, doc);
+			retval = emd1ToXml(srcBuffer, srcBufLen, doc, filename);
 			break;
 		case 2:
 			retval = emd2ToXml(srcBuffer, srcBufLen, doc);
@@ -123,7 +125,11 @@ int emdToXml(const char *filename)
 
 	/* Save if OK */
 	if (!retval) {
-		xmlSaveFormatFileEnc("re1.xml", doc, "UTF-8", 1);
+		dst_filename = get_filename_ext(filename, ".xml");
+		if (dst_filename) {
+			xmlSaveFormatFileEnc(dst_filename, doc, "UTF-8", 1);
+		}
+		free(dst_filename);
 	}
 	xmlFreeDoc(doc);
 
@@ -153,7 +159,7 @@ int getEmdVersion(Uint8 *src, Uint32 srcLen)
 
 /*--- RE1 EMD ---*/
 
-int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
+int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc, const char *filename)
 {
 	xmlNodePtr root, node;
 
@@ -179,7 +185,7 @@ int emd1ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
 	/* TIM image */
 	node = xmlNewNode(NULL, BAD_CAST "tim");
 	xmlAddChild(root, node);
-	xmlNewProp(node, BAD_CAST "filename", BAD_CAST "texture.tim");
+	emd1AddTim(src, srcLen, node, filename);
 
 	return 0;
 }
@@ -450,6 +456,24 @@ void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 			xmlNewProp(node_v, BAD_CAST "tv", buf);
 		}
 	}
+}
+
+void emd1AddTim(Uint8 *src, Uint32 srcLen, xmlNodePtr root, const char *filename)
+{
+	emd1_directory_t *emd1_dir = (emd1_directory_t *) (&src[srcLen-sizeof(emd1_directory_t)]);
+	Uint32 tim_size = srcLen-sizeof(emd1_directory_t)-SDL_SwapLE32(emd1_dir->tim);
+	char *dst_filename;
+
+	dst_filename = get_filename_ext(filename, ".tim");
+	if (!dst_filename) {
+		return;
+	}
+
+	save_file(dst_filename, &src[SDL_SwapLE32(emd1_dir->tim)], tim_size);
+
+	xmlNewProp(root, BAD_CAST "filename", dst_filename);
+
+	free(dst_filename);
 }
 
 /*--- RE2 EMD ---*/

@@ -42,7 +42,7 @@ iso_search_SOURCES = iso_search.c md5.c param.c
 
 iso_search_headers = md5.h background_tim.h
 
-emd2xml_SOURCES = emd2xml.c
+emd2xml_SOURCES = emd2xml.c file_functions.c
 emd2xml_CFLAGS = $(LIBXML_CFLAGS) $(AM_CFLAGS)
 emd2xml_LDFLAGS = $(LIBXML_LIBS)
 
