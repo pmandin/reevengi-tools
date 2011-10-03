@@ -24,7 +24,7 @@
 
 #include <SDL.h>
 
-static char *get_filename_ext(const char *src_filename, const char *new_ext)
+char *get_filename_ext(const char *src_filename, const char *new_ext)
 {
 	int dst_namelength = strlen(src_filename)+1;
 	char *dst_filename;

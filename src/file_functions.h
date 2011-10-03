@@ -21,6 +21,8 @@
 #ifndef FILE_FUNCTIONS_H
 #define FILE_FUNCTIONS_H 1
 
+char *get_filename_ext(const char *src_filename, const char *new_ext);
+
 void save_file(const char *filename, void *buffer, int length);
 
 void save_bmp(const char *src_filename, SDL_Surface *image);
