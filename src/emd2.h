@@ -53,4 +53,69 @@ typedef struct {
 	Uint16	offset;
 } emd2_anim_header_t;
 
+/* Model */
+typedef struct {
+	Uint32	length;
+	Uint32	unknown;
+	Uint32	count;
+} emd2_model_header_t;
+
+typedef struct {
+	Uint32	vtx_offset;
+	Uint32	vtx_count;
+	Uint32	nor_offset;
+	Uint32	nor_count;
+	Uint32	tri_offset;
+	Uint32	tri_count;
+	Uint32	tex_offset;
+} emd2_model_triangle_t;
+
+typedef struct {
+	Uint32	vtx_offset;
+	Uint32	vtx_count;
+	Uint32	nor_offset;
+	Uint32	nor_count;
+	Uint32	quad_offset;
+	Uint32	quad_count;
+	Uint32	tex_offset;
+} emd2_model_quad_t;
+
+typedef struct {
+	emd2_model_triangle_t triangle;
+	emd2_model_quad_t quad;
+} emd2_model_object_t;
+
+typedef struct {
+	Uint16	n0,v0;
+	Uint16	n1,v1;
+	Uint16	n2,v2;
+} emd2_triangle_t;
+
+typedef struct {
+	Uint8 tu0,tv0;
+	Uint16 clutid;
+	Uint8 tu1,tv1;
+	Uint16 page;
+	Uint8 tu2,tv2;
+	Uint16 dummy;
+} emd2_triangle_tex_t;
+
+typedef struct {
+	Uint16	n0,v0;
+	Uint16	n1,v1;
+	Uint16	n2,v2;
+	Uint16	n3,v3;
+} emd2_quad_t;
+
+typedef struct {
+	Uint8 tu0,tv0;
+	Uint16 clutid;
+	Uint8 tu1,tv1;
+	Uint16 page;
+	Uint8 tu2,tv2;
+	Uint16 dummy0;
+	Uint8 tu3,tv3;
+	Uint16 dummy1;
+} emd2_quad_tex_t;
+
 #endif /* EMD2_H */

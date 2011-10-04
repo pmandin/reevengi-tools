@@ -49,7 +49,7 @@ typedef struct {
 	Uint16	offset;
 } emd1_anim_header_t;
 
-/* Mesh */
+/* Model */
 typedef struct {
 	Uint32	length;
 	Uint32	unknown;
@@ -70,9 +70,9 @@ typedef struct {
 	Uint32 unknown;
 
 	Uint8 tu0,tv0;
-	Uint16 page;
-	Uint8 tu1,tv1;
 	Uint16 clutid;
+	Uint8 tu1,tv1;
+	Uint16 page;
 	Uint8 tu2,tv2;
 	Uint16 dummy;
 
