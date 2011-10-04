@@ -46,7 +46,7 @@ emd2xml_SOURCES = emd2xml.c file_functions.c
 emd2xml_CFLAGS = $(LIBXML_CFLAGS) $(AM_CFLAGS)
 emd2xml_LDFLAGS = $(LIBXML_LIBS)
 
-emd2xml_headers = emd_common.h
+emd2xml_headers = emd_common.h emd1.h emd2.h emd3.h
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
 	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers) \

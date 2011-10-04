@@ -29,6 +29,7 @@
 #include "file_functions.h"
 #include "emd_common.h"
 #include "emd1.h"
+#include "emd2.h"
 
 /*--- Functions prototypes ---*/
 
@@ -44,6 +45,9 @@ void emd1AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 void emd1AddTim(Uint8 *src, Uint32 srcLen, xmlNodePtr root, const char *filename);
 
 int emd2ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
+void emd2AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root);
+void emd2AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root);
+Sint16 emd2Read12Bits(Uint8 *array, int index);
 
 int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 
@@ -327,7 +331,7 @@ void emd1AddAnimation(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 	Uint32 *anim_frames = (Uint32 *) anim_hdr;
 
 	for (i=0; i<num_seq; i++) {
-		Uint16 anim_offset = anim_hdr[i].offset;
+		Uint16 anim_offset = SDL_SwapLE16(anim_hdr[i].offset);
 
 		node = xmlNewNode(NULL, BAD_CAST "sequence");
 		xmlAddChild(root, node);
@@ -336,7 +340,7 @@ void emd1AddAnimation(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 		xmlNewProp(node, BAD_CAST "id", buf);
 
 		for (j=0; j<SDL_SwapLE16(anim_hdr[i].count); j++) {
-			Uint32 frame = SDL_SwapLE32(anim_frames[(anim_hdr[i].offset>>2) + j]);
+			Uint32 frame = SDL_SwapLE32(anim_frames[(anim_offset>>2) + j]);
 
 			node_frame = xmlNewNode(NULL, BAD_CAST "frame");
 			xmlAddChild(node, node_frame);
@@ -480,8 +484,198 @@ void emd1AddTim(Uint8 *src, Uint32 srcLen, xmlNodePtr root, const char *filename
 
 int emd2ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
 {
+	xmlNodePtr root, node;
+	xmlChar buf[32];
+	int i;
+
 	printf("Detected RE2 EMD file\n");
-	return 1;
+	root = xmlNewNode(NULL, BAD_CAST "emd");	
+	xmlNewProp(root, BAD_CAST "version", BAD_CAST "2");
+	xmlDocSetRootElement(doc, root);
+
+	for (i=0; i<1; i++) {
+		/* Animations */
+		node = xmlNewNode(NULL, BAD_CAST "animation");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+		emd2AddAnimation(src, srcLen, i, node);
+
+		/* Skeleton */
+		node = xmlNewNode(NULL, BAD_CAST "skeleton");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+		emd2AddSkeleton(src, srcLen, i, node);
+	}
+
+	/* Model */
+/*	node = xmlNewNode(NULL, BAD_CAST "model");
+	xmlAddChild(root, node);
+	emd2AddModel(src, srcLen, node);*/
+
+	return 0;
+}
+
+void emd2AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root)
+{
+	emd_header_t *emd_hdr;
+	emd2_directory_t *emd2_dir;
+	emd_skel_header_t *emd_skel_header;
+	Uint8 *src_skel, *src_move;
+	emd_vertex3_t *emd_skel_relpos;
+	emd_armature_header_t *emd_skel_data;
+	xmlNodePtr node;
+	int i,j;
+
+	emd_hdr = (emd_header_t *) src;
+	emd2_dir = (emd2_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	switch(num_skel) {
+		case 1:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd2_dir->skeleton1)];
+			break;
+		case 2:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd2_dir->skeleton2)];
+			break;
+		case 0:
+		default:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd2_dir->skeleton0)];
+			break;
+	}
+
+	/*--- Skeleton ---*/
+	src_skel = (Uint8 *) emd_skel_header;
+	emd_skel_relpos = (emd_vertex3_t *) (&src_skel[sizeof(emd_skel_header_t)]);
+	emd_skel_data = (emd_armature_header_t *) (&src_skel[SDL_SwapLE16(emd_skel_header->relpos_len)]);
+
+	/* Armature */
+	emd1AddArmature(root, emd_skel_data, emd_skel_relpos, 0);
+
+	/* Armature movement */
+	src_move = &src_skel[SDL_SwapLE16(emd_skel_header->move_offset)];
+
+	node = xmlNewNode(NULL, BAD_CAST "skel_move");
+	xmlAddChild(root, node);
+	for (i=0; i<emd1GetNumMovements(src, srcLen); i++) {
+		xmlNodePtr node_move;
+		xmlChar buf[32];
+		emd2_skel_anim_t *emd_skel_anim = (emd2_skel_anim_t *) src_move;
+		Uint8 *mesh_move = (Uint8 *) &src_move[sizeof(emd2_skel_anim_t)];
+		int mesh_move_pos = 0;	/* index inside mesh_move array, in 12 bits units */
+
+		node_move = xmlNewNode(NULL, BAD_CAST "movement");
+		xmlAddChild(node, node_move);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_move, BAD_CAST "id", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.x));
+		xmlNewProp(node_move, BAD_CAST "x", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.y));
+		xmlNewProp(node_move, BAD_CAST "y", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.z));
+		xmlNewProp(node_move, BAD_CAST "z", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->speed.x));
+		xmlNewProp(node_move, BAD_CAST "dx", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->speed.y));
+		xmlNewProp(node_move, BAD_CAST "dy", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->speed.z));
+		xmlNewProp(node_move, BAD_CAST "dz", buf);
+
+		for (j=0; j<SDL_SwapLE16(emd_skel_header->count); j++) {
+			xmlNodePtr node_mesh;
+
+			node_mesh = xmlNewNode(NULL, BAD_CAST "mesh_move");
+			xmlAddChild(node_move, node_mesh);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", j);
+			xmlNewProp(node_mesh, BAD_CAST "id", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos));
+			xmlNewProp(node_mesh, BAD_CAST "ax", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos+1));
+			xmlNewProp(node_mesh, BAD_CAST "ay", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos+2));
+			xmlNewProp(node_mesh, BAD_CAST "az", buf);
+
+			mesh_move += 3;
+		}
+
+		/* Next movement */
+		src_move += SDL_SwapLE16(emd_skel_header->move_size);
+	}
+}
+
+Sint16 emd2Read12Bits(Uint8 *array, int index)
+{
+	Sint16 val = 0;
+
+	switch(index & 1) {
+		case 0:	/* XX and -X */
+			val= array[index]|(array[index+1]<<8);
+			break;
+		case 1: /* Y- and YY */
+			val = (array[index]>>4)|(array[index+1]<<4);
+			break;
+	}
+	val &= 0xfff;
+	if (val & (1<<11)) {
+		val |= 0xf000;
+	}
+
+	return val;
+}
+
+void emd2AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root)
+{
+	emd_header_t *emd_hdr;
+	emd2_directory_t *emd2_dir;
+	emd2_anim_header_t *anim_hdr;
+	xmlNodePtr node, node_frame;
+	xmlChar buf[32];
+	int i, j, num_seq;
+	Uint32 *anim_frames;
+
+	emd_hdr = (emd_header_t *) src;
+	emd2_dir = (emd2_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	switch(num_anim) {
+		case 1:
+			anim_hdr = (emd2_anim_header_t * ) &src[SDL_SwapLE32(emd2_dir->animation1)];
+			break;
+		case 2:
+			anim_hdr = (emd2_anim_header_t * ) &src[SDL_SwapLE32(emd2_dir->animation2)];
+			break;
+		case 0:
+		default:
+			anim_hdr = (emd2_anim_header_t * ) &src[SDL_SwapLE32(emd2_dir->animation0)];
+			break;
+	}
+	num_seq = SDL_SwapLE16(anim_hdr[0].offset)/sizeof(emd2_anim_header_t);
+	anim_frames = (Uint32 *) anim_hdr;
+
+	for (i=0; i<num_seq; i++) {
+		Uint16 anim_offset = SDL_SwapLE16(anim_hdr[i].offset);
+
+		node = xmlNewNode(NULL, BAD_CAST "sequence");
+		xmlAddChild(root, node);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		for (j=0; j<SDL_SwapLE16(anim_hdr[i].count); j++) {
+			Uint32 frame = SDL_SwapLE32(anim_frames[(anim_offset>>2) + j]);
+
+			node_frame = xmlNewNode(NULL, BAD_CAST "frame");
+			xmlAddChild(node, node_frame);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", frame & 0xfff);
+			xmlNewProp(node_frame, BAD_CAST "movement", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (frame>>12) & 0xfffff);
+			xmlNewProp(node_frame, BAD_CAST "flags", buf);
+		}
+	}
 }
 
 /*--- RE3 EMD ---*/
