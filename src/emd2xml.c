@@ -53,8 +53,8 @@ Sint16 emd2Read12Bits(Uint8 *array, int index);
 void emd2AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 void emd2AddModelTriangles(Uint8 *src, emd2_model_triangle_t *model_tri, xmlNodePtr root);
 void emd2AddModelQuads(Uint8 *src, emd2_model_quad_t *model_quad, xmlNodePtr root);
-void emd2AddModelTriTex(emd2_triangle_tex_t *tri_tex, Uint32 count, xmlNodePtr root);
-void emd2AddModelQuadTex(emd2_quad_tex_t *quad_tex, Uint32 count, xmlNodePtr root);
+void emd2AddModelTri(emd2_triangle_t *tri, emd2_triangle_tex_t *tri_tex, Uint32 count, xmlNodePtr root);
+void emd2AddModelQuad(emd2_quad_t *quad, emd2_quad_tex_t *quad_tex, Uint32 count, xmlNodePtr root);
 
 int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 
@@ -746,11 +746,10 @@ void emd2AddModelTriangles(Uint8 *src, emd2_model_triangle_t *model_tri, xmlNode
 	emd1AddModelNormals((emd_vertex4_t *) &src[SDL_SwapLE32(model_tri->nor_offset)],
 		SDL_SwapLE32(model_tri->nor_count), node);
 
-	/* Texture */
-	emd2AddModelTriTex((emd2_triangle_tex_t *) &src[SDL_SwapLE32(model_tri->tex_offset)],
+	/* Texture,Triangles */
+	emd2AddModelTri((emd2_triangle_t *) &src[SDL_SwapLE32(model_tri->tri_offset)],
+		(emd2_triangle_tex_t *) &src[SDL_SwapLE32(model_tri->tex_offset)],
 		SDL_SwapLE32(model_tri->tri_count), node);
-	
-	/* Triangles */
 }
 
 void emd2AddModelQuads(Uint8 *src, emd2_model_quad_t *model_quad, xmlNodePtr root)
@@ -768,85 +767,116 @@ void emd2AddModelQuads(Uint8 *src, emd2_model_quad_t *model_quad, xmlNodePtr roo
 	emd1AddModelNormals((emd_vertex4_t *) &src[SDL_SwapLE32(model_quad->nor_offset)],
 		SDL_SwapLE32(model_quad->nor_count), node);
 
-	/* Texture */
-	emd2AddModelQuadTex((emd2_quad_tex_t *) &src[SDL_SwapLE32(model_quad->tex_offset)],
+	/* Texture,Quads */
+	emd2AddModelQuad((emd2_quad_t *) &src[SDL_SwapLE32(model_quad->quad_offset)],
+		(emd2_quad_tex_t *) &src[SDL_SwapLE32(model_quad->tex_offset)],
 		SDL_SwapLE32(model_quad->quad_count), node);
-	
-	/* Quads */
 }
 
-void emd2AddModelTriTex(emd2_triangle_tex_t *tri_tex, Uint32 count, xmlNodePtr root)
+void emd2AddModelTri(emd2_triangle_t *tri, emd2_triangle_tex_t *tri_tex, Uint32 count, xmlNodePtr root)
 {
-	int i;
-	xmlNodePtr node;
+	int i, j;
+	xmlNodePtr node, node_tx, node_v;
 	xmlChar buf[32];
 
 	for (i=0; i<count; i++) {
-		node = xmlNewNode(NULL, BAD_CAST "texture");
+		node = xmlNewNode(NULL, BAD_CAST "triangle");
 		xmlAddChild(root, node);
-
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
 		xmlNewProp(node, BAD_CAST "id", buf);
 
+		/* Texture */
+		node_tx = xmlNewNode(NULL, BAD_CAST "texture");
+		xmlAddChild(node, node_tx);
+
+		/*xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_tx, BAD_CAST "id", buf);*/
+
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (SDL_SwapLE16(tri_tex[i].page)<<1) & 0xff);
-		xmlNewProp(node, BAD_CAST "page", buf);
+		xmlNewProp(node_tx, BAD_CAST "page", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri_tex[i].clutid) & 3);
-		xmlNewProp(node, BAD_CAST "clut", buf);
+		xmlNewProp(node_tx, BAD_CAST "clut", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tu0);
-		xmlNewProp(node, BAD_CAST "tu0", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu0", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tv0);
-		xmlNewProp(node, BAD_CAST "tv0", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv0", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tu1);
-		xmlNewProp(node, BAD_CAST "tu1", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu1", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tv1);
-		xmlNewProp(node, BAD_CAST "tv1", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv1", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tu2);
-		xmlNewProp(node, BAD_CAST "tu2", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu2", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri_tex[i].tv2);
-		xmlNewProp(node, BAD_CAST "tv2", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv2", buf);
+
+		/* Vertices */
+		for (j=0; j<3; j++) {
+			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+			xmlAddChild(node, node_v);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[i].vtx[j].v));
+			xmlNewProp(node_v, BAD_CAST "v", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(tri[i].vtx[j].n));
+			xmlNewProp(node_v, BAD_CAST "n", buf);
+		}
 	}
 }
 
-void emd2AddModelQuadTex(emd2_quad_tex_t *quad_tex, Uint32 count, xmlNodePtr root)
+void emd2AddModelQuad(emd2_quad_t *quad, emd2_quad_tex_t *quad_tex, Uint32 count, xmlNodePtr root)
 {
-	int i;
-	xmlNodePtr node;
+	int i, j;
+	xmlNodePtr node, node_tx, node_v;
 	xmlChar buf[32];
 
 	for (i=0; i<count; i++) {
-		node = xmlNewNode(NULL, BAD_CAST "texture");
+		node = xmlNewNode(NULL, BAD_CAST "quad");
 		xmlAddChild(root, node);
-
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
 		xmlNewProp(node, BAD_CAST "id", buf);
 
+		/* Texture */
+		node_tx = xmlNewNode(NULL, BAD_CAST "texture");
+		xmlAddChild(node, node_tx);
+
+		/*xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_tx, BAD_CAST "id", buf);*/
+
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (SDL_SwapLE16(quad_tex[i].page)<<1) & 0xff);
-		xmlNewProp(node, BAD_CAST "page", buf);
+		xmlNewProp(node_tx, BAD_CAST "page", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(quad_tex[i].clutid) & 3);
-		xmlNewProp(node, BAD_CAST "clut", buf);
+		xmlNewProp(node_tx, BAD_CAST "clut", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tu0);
-		xmlNewProp(node, BAD_CAST "tu0", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu0", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tv0);
-		xmlNewProp(node, BAD_CAST "tv0", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv0", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tu1);
-		xmlNewProp(node, BAD_CAST "tu1", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu1", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tv1);
-		xmlNewProp(node, BAD_CAST "tv1", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv1", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tu2);
-		xmlNewProp(node, BAD_CAST "tu2", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu2", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tv2);
-		xmlNewProp(node, BAD_CAST "tv2", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv2", buf);
 
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tu3);
-		xmlNewProp(node, BAD_CAST "tu3", buf);
+		xmlNewProp(node_tx, BAD_CAST "tu3", buf);
 		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad_tex[i].tv3);
-		xmlNewProp(node, BAD_CAST "tv3", buf);
+		xmlNewProp(node_tx, BAD_CAST "tv3", buf);
+
+		/* Vertices */
+		for (j=0; j<4; j++) {
+			node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+			xmlAddChild(node, node_v);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(quad[i].vtx[j].v));
+			xmlNewProp(node_v, BAD_CAST "v", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(quad[i].vtx[j].n));
+			xmlNewProp(node_v, BAD_CAST "n", buf);
+		}
 	}
 }
 

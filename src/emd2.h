@@ -86,9 +86,12 @@ typedef struct {
 } emd2_model_object_t;
 
 typedef struct {
-	Uint16	n0,v0;
-	Uint16	n1,v1;
-	Uint16	n2,v2;
+	Uint16	n;	/* Normal */
+	Uint16	v;	/* Vertex */
+} emd2_vtx_nv_t;
+
+typedef struct {
+	emd2_vtx_nv_t vtx[3];
 } emd2_triangle_t;
 
 typedef struct {
@@ -101,10 +104,7 @@ typedef struct {
 } emd2_triangle_tex_t;
 
 typedef struct {
-	Uint16	n0,v0;
-	Uint16	n1,v1;
-	Uint16	n2,v2;
-	Uint16	n3,v3;
+	emd2_vtx_nv_t vtx[4];
 } emd2_quad_t;
 
 typedef struct {
