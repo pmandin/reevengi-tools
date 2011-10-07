@@ -30,6 +30,7 @@
 #include "emd_common.h"
 #include "emd1.h"
 #include "emd2.h"
+#include "emd3.h"
 
 /*--- Functions prototypes ---*/
 
@@ -57,6 +58,9 @@ void emd2AddModelTri(emd2_triangle_t *tri, emd2_triangle_tex_t *tri_tex, Uint32 
 void emd2AddModelQuad(emd2_quad_t *quad, emd2_quad_tex_t *quad_tex, Uint32 count, xmlNodePtr root);
 
 int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
+void emd3AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root);
+void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root);
+void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 
 /*--- Functions ---*/
 
@@ -884,6 +888,94 @@ void emd2AddModelQuad(emd2_quad_t *quad, emd2_quad_tex_t *quad_tex, Uint32 count
 
 int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
 {
+	xmlNodePtr root, node;
+	xmlChar buf[32];
+	int i;
+
 	printf("Detected RE3 EMD file\n");
-	return 1;
+	root = xmlNewNode(NULL, BAD_CAST "emd");	
+	xmlNewProp(root, BAD_CAST "version", BAD_CAST "3");
+	xmlDocSetRootElement(doc, root);
+
+	for (i=0; i<1; i++) {
+		/* Animations */
+		node = xmlNewNode(NULL, BAD_CAST "animation");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+		emd3AddAnimation(src, srcLen, i, node);
+
+		/* Skeleton */
+		node = xmlNewNode(NULL, BAD_CAST "skeleton");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+		emd3AddSkeleton(src, srcLen, i, node);
+	}
+
+	/* Model */
+	node = xmlNewNode(NULL, BAD_CAST "model");
+	xmlAddChild(root, node);
+	emd3AddModel(src, srcLen, node);
+
+	return 0;
+}
+
+void emd3AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root)
+{
+}
+
+void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root)
+{
+	emd_header_t *emd_hdr;
+	emd3_directory_t *emd3_dir;
+	emd3_anim_header_t *anim_hdr;
+	xmlNodePtr node, node_frame;
+	xmlChar buf[32];
+	int i, j, num_seq;
+	Uint16 *anim_frames;
+
+	emd_hdr = (emd_header_t *) src;
+	emd3_dir = (emd3_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	switch(num_anim) {
+		case 1:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation1)];
+			break;
+		case 2:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation2)];
+			break;
+		case 0:
+		default:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation0)];
+			break;
+	}
+	num_seq = SDL_SwapLE16(anim_hdr[0].offset)/sizeof(emd3_anim_header_t);
+	anim_frames = (Uint16 *) anim_hdr;
+
+	for (i=0; i<num_seq; i++) {
+		Uint16 anim_offset = SDL_SwapLE16(anim_hdr[i].offset);
+
+		node = xmlNewNode(NULL, BAD_CAST "sequence");
+		xmlAddChild(root, node);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		for (j=0; j<SDL_SwapLE16(anim_hdr[i].count); j++) {
+			Uint16 frame = SDL_SwapLE16(anim_frames[(anim_offset>>1) + j]);
+
+			node_frame = xmlNewNode(NULL, BAD_CAST "frame");
+			xmlAddChild(node, node_frame);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", frame & 0xff);
+			xmlNewProp(node_frame, BAD_CAST "movement", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (frame>>8) & 0xff);
+			xmlNewProp(node_frame, BAD_CAST "flags", buf);
+		}
+	}
+}
+
+void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
+{
 }
