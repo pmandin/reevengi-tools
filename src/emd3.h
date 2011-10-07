@@ -47,4 +47,12 @@ typedef struct {
 	Uint16	pad[2];
 } emd3_anim_header_t;
 
+/* Skeleton */
+typedef struct {
+	emd_vertex3_t	pos;
+	Sint16	speed_y;
+
+	/* 12 bits values for angles following */
+} emd3_skel_anim_t;
+
 #endif /* EMD3_H */

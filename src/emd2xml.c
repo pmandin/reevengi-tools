@@ -59,6 +59,7 @@ void emd2AddModelQuad(emd2_quad_t *quad, emd2_quad_tex_t *quad_tex, Uint32 count
 
 int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc);
 void emd3AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root);
+Uint32 emd3GetNumMovements(Uint8 *src, Uint32 srcLen, int num_anim);
 void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root);
 void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
 
@@ -321,7 +322,7 @@ Uint32 emd1GetNumMovements(Uint8 *src, Uint32 srcLen)
 		Uint16 anim_offset = anim_hdr[i].offset;
 
 		for (j=0; j<SDL_SwapLE16(anim_hdr[i].count); j++) {
-			Uint32 frame = SDL_SwapLE32(anim_frames[(anim_hdr[i].offset>>2) + j]);
+			Uint32 frame = SDL_SwapLE32(anim_frames[(anim_offset>>2) + j]);
 
 			if ((frame & 0xffffUL) > num_moves) {
 				num_moves = frame & 0xffffUL;
@@ -923,6 +924,134 @@ int emd3ToXml(Uint8 *src, Uint32 srcLen, xmlDoc *doc)
 
 void emd3AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root)
 {
+	emd_header_t *emd_hdr;
+	emd3_directory_t *emd3_dir;
+	emd_skel_header_t *emd_skel_header;
+	Uint8 *src_skel, *src_move;
+	emd_vertex3_t *emd_skel_relpos;
+	emd_armature_header_t *emd_skel_data;
+	xmlNodePtr node;
+	int i,j;
+
+	emd_hdr = (emd_header_t *) src;
+	emd3_dir = (emd3_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	switch(num_skel) {
+		case 1:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd3_dir->skeleton1)];
+			break;
+		case 2:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd3_dir->skeleton2)];
+			break;
+		case 0:
+		default:
+			emd_skel_header = (emd_skel_header_t *) &src[SDL_SwapLE32(emd3_dir->skeleton0)];
+			break;
+	}
+
+	/*--- Skeleton ---*/
+	src_skel = (Uint8 *) emd_skel_header;
+	emd_skel_relpos = (emd_vertex3_t *) (&src_skel[sizeof(emd_skel_header_t)]);
+	emd_skel_data = (emd_armature_header_t *) (&src_skel[SDL_SwapLE16(emd_skel_header->relpos_len)]);
+
+	/* Armature */
+	emd1AddArmature(root, emd_skel_data, emd_skel_relpos, 0);
+
+	/* Armature movement */
+	src_move = &src_skel[SDL_SwapLE16(emd_skel_header->move_offset)];
+
+	node = xmlNewNode(NULL, BAD_CAST "skel_move");
+	xmlAddChild(root, node);
+	for (i=0; i<emd3GetNumMovements(src, srcLen, num_skel); i++) {
+		xmlNodePtr node_move;
+		xmlChar buf[32];
+		emd3_skel_anim_t *emd_skel_anim = (emd3_skel_anim_t *) src_move;
+		Uint8 *mesh_move = (Uint8 *) &src_move[sizeof(emd2_skel_anim_t)];
+		int mesh_move_pos = 0;	/* index inside mesh_move array, in 12 bits units */
+
+		node_move = xmlNewNode(NULL, BAD_CAST "movement");
+		xmlAddChild(node, node_move);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_move, BAD_CAST "id", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.x));
+		xmlNewProp(node_move, BAD_CAST "x", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.y));
+		xmlNewProp(node_move, BAD_CAST "y", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->pos.z));
+		xmlNewProp(node_move, BAD_CAST "z", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", 0);
+		xmlNewProp(node_move, BAD_CAST "dx", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", SDL_SwapLE16(emd_skel_anim->speed_y));
+		xmlNewProp(node_move, BAD_CAST "dy", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", 0);
+		xmlNewProp(node_move, BAD_CAST "dz", buf);
+
+		for (j=0; j<SDL_SwapLE16(emd_skel_header->count); j++) {
+			xmlNodePtr node_mesh;
+
+			node_mesh = xmlNewNode(NULL, BAD_CAST "mesh_move");
+			xmlAddChild(node_move, node_mesh);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", j);
+			xmlNewProp(node_mesh, BAD_CAST "id", buf);
+
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos));
+			xmlNewProp(node_mesh, BAD_CAST "ax", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos+1));
+			xmlNewProp(node_mesh, BAD_CAST "ay", buf);
+			xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", emd2Read12Bits(mesh_move, mesh_move_pos+2));
+			xmlNewProp(node_mesh, BAD_CAST "az", buf);
+
+			mesh_move += 3;
+		}
+
+		/* Next movement */
+		src_move += SDL_SwapLE16(emd_skel_header->move_size);
+	}
+}
+
+Uint32 emd3GetNumMovements(Uint8 *src, Uint32 srcLen, int num_anim)
+{
+	emd_header_t *emd_hdr;
+	emd3_directory_t *emd3_dir;
+	emd3_anim_header_t *anim_hdr;
+	int i, j, num_seq;
+	Uint16 *anim_frames;
+	Uint32 num_moves;
+
+	emd_hdr = (emd_header_t *) src;
+	emd3_dir = (emd3_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	switch(num_anim) {
+		case 1:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation1)];
+			break;
+		case 2:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation2)];
+			break;
+		case 0:
+		default:
+			anim_hdr = (emd3_anim_header_t * ) &src[SDL_SwapLE32(emd3_dir->animation0)];
+			break;
+	}
+	num_seq = SDL_SwapLE16(anim_hdr[0].offset)/sizeof(emd3_anim_header_t);
+	anim_frames = (Uint16 *) anim_hdr;
+	num_moves = 0;
+
+	for (i=0; i<num_seq; i++) {
+		Uint16 anim_offset = SDL_SwapLE16(anim_hdr[i].offset);
+
+		for (j=0; j<SDL_SwapLE16(anim_hdr[i].count); j++) {
+			Uint16 frame = SDL_SwapLE16(anim_frames[(anim_offset>>1) + j]);
+
+			if ((frame & 0xffUL) > num_moves) {
+				num_moves = frame & 0xffUL;
+			}
+		}
+	}
+
+	return num_moves+1;
 }
 
 void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root)
