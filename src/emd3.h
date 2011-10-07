@@ -55,4 +55,45 @@ typedef struct {
 	/* 12 bits values for angles following */
 } emd3_skel_anim_t;
 
+/* Model */
+typedef struct {
+	Uint32	length;
+	Uint32	count;
+} emd3_model_header_t;
+
+typedef struct {
+	Uint16	vtx_offset;
+	Uint16	dummy0;
+	Uint16	nor_offset;
+	Uint16	dummy1;
+	Uint16	vtx_count;
+	Uint16	dummy2;
+	Uint16	tri_offset;
+	Uint16	dummy3;
+	Uint16	quad_offset;
+	Uint16	dummy4;
+	Uint16	tri_count;
+	Uint16	quad_count;
+} emd3_model_object_t;
+
+typedef struct {
+	Uint8 tu0,tv0;
+	Uint8 page,dummy0;
+	Uint8 tu1,tv1;
+	Uint8 clutid,v0;
+	Uint8 tu2,tv2;
+	Uint8 v1,v2;
+} emd3_triangle_t;
+
+typedef struct {
+	Uint8 tu0,tv0;
+	Uint8 page,dummy0;
+	Uint8 tu1,tv1;
+	Uint8 clutid,dummy1;
+	Uint8 tu2,tv2;
+	Uint8 v0,v1;
+	Uint8 tu3,tv3;
+	Uint8 v2,v3;
+} emd3_quad_t;
+
 #endif /* EMD3_H */
