@@ -62,16 +62,11 @@ typedef struct {
 } emd3_model_header_t;
 
 typedef struct {
-	Uint16	vtx_offset;
-	Uint16	dummy0;
-	Uint16	nor_offset;
-	Uint16	dummy1;
-	Uint16	vtx_count;
-	Uint16	dummy2;
-	Uint16	tri_offset;
-	Uint16	dummy3;
-	Uint16	quad_offset;
-	Uint16	dummy4;
+	Uint32	vtx_offset;
+	Uint32	nor_offset;
+	Uint32	vtx_count;
+	Uint32	tri_offset;
+	Uint32	quad_offset;
 	Uint16	tri_count;
 	Uint16	quad_count;
 } emd3_model_object_t;

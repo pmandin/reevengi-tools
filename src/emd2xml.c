@@ -62,6 +62,8 @@ void emd3AddSkeleton(Uint8 *src, Uint32 srcLen, int num_skel, xmlNodePtr root);
 Uint32 emd3GetNumMovements(Uint8 *src, Uint32 srcLen, int num_anim);
 void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root);
 void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root);
+void emd3AddModelTriangles(emd3_triangle_t *tri, Uint32 count, xmlNodePtr root);
+void emd3AddModelQuads(emd3_quad_t *quad, Uint32 count, xmlNodePtr root);
 
 /*--- Functions ---*/
 
@@ -1107,4 +1109,157 @@ void emd3AddAnimation(Uint8 *src, Uint32 srcLen, int num_anim, xmlNodePtr root)
 
 void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 {
+	xmlNodePtr node, node_vtx, node_nor, node_tri, node_tex, node_v;
+	xmlChar buf[32];
+	emd_header_t *emd_hdr;
+	emd3_directory_t *emd3_dir;
+	emd3_model_header_t *model_hdr;
+	emd3_model_object_t *model_obj;
+	Uint8 *tmp;
+	int i;
+
+	emd_hdr = (emd_header_t *) src;
+	emd3_dir = (emd3_directory_t *) &src[SDL_SwapLE32(emd_hdr->offset)];
+	model_hdr = (emd3_model_header_t *) &src[SDL_SwapLE32(emd3_dir->model)];
+	tmp = (Uint8 *) model_hdr;
+	model_obj = (emd3_model_object_t *) &tmp[sizeof(emd3_model_header_t)];
+	tmp = (Uint8 *) model_obj;
+
+	for (i=0; i<SDL_SwapLE32(model_hdr->count); i++) {
+		node = xmlNewNode(NULL, BAD_CAST "mesh");
+		xmlAddChild(root, node);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		/* Vertices */
+		emd1AddModelVertices((emd_vertex4_t *) &tmp[SDL_SwapLE32(model_obj[i].vtx_offset)],
+			SDL_SwapLE32(model_obj[i].vtx_count), node);
+
+		/* Normals */
+		emd1AddModelNormals((emd_vertex4_t *) &tmp[SDL_SwapLE32(model_obj[i].nor_offset)],
+			SDL_SwapLE32(model_obj[i].vtx_count), node);
+
+		/* Triangles */
+		emd3AddModelTriangles((emd3_triangle_t *) &tmp[SDL_SwapLE32(model_obj[i].tri_offset)],
+			SDL_SwapLE16(model_obj[i].tri_count), node);
+
+		/* Quads */
+		emd3AddModelQuads((emd3_quad_t *) &tmp[SDL_SwapLE32(model_obj[i].quad_offset)],
+			SDL_SwapLE16(model_obj[i].quad_count), node);
+
+		/*tmp += sizeof(emd3_model_object_t);*/
+	}
 }
+
+void emd3AddModelTriangles(emd3_triangle_t *tri, Uint32 count, xmlNodePtr root)
+{
+	int i, j;
+	xmlNodePtr node, node_tx, node_v;
+	xmlChar buf[32];
+
+	for (i=0; i<count; i++) {
+		node = xmlNewNode(NULL, BAD_CAST "triangle");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		/* Texture */
+		node_tx = xmlNewNode(NULL, BAD_CAST "texture");
+		xmlAddChild(node, node_tx);
+
+		/*xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_tx, BAD_CAST "id", buf);*/
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (tri[i].page<<1) & 0xff);
+		xmlNewProp(node_tx, BAD_CAST "page", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].clutid & 3);
+		xmlNewProp(node_tx, BAD_CAST "clut", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tu0);
+		xmlNewProp(node_tx, BAD_CAST "tu0", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tv0);
+		xmlNewProp(node_tx, BAD_CAST "tv0", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tu1);
+		xmlNewProp(node_tx, BAD_CAST "tu1", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tv1);
+		xmlNewProp(node_tx, BAD_CAST "tv1", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tu2);
+		xmlNewProp(node_tx, BAD_CAST "tu2", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].tv2);
+		xmlNewProp(node_tx, BAD_CAST "tv2", buf);
+
+		/* Vertices */
+		node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+		xmlAddChild(node, node_v);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].v0);
+		xmlNewProp(node_v, BAD_CAST "v0", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].v1);
+		xmlNewProp(node_v, BAD_CAST "v1", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", tri[i].v2);
+		xmlNewProp(node_v, BAD_CAST "v2", buf);
+	}
+}
+
+void emd3AddModelQuads(emd3_quad_t *quad, Uint32 count, xmlNodePtr root)
+{
+	int i, j;
+	xmlNodePtr node, node_tx, node_v;
+	xmlChar buf[32];
+
+	for (i=0; i<count; i++) {
+		node = xmlNewNode(NULL, BAD_CAST "quad");
+		xmlAddChild(root, node);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node, BAD_CAST "id", buf);
+
+		/* Texture */
+		node_tx = xmlNewNode(NULL, BAD_CAST "texture");
+		xmlAddChild(node, node_tx);
+
+		/*xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", i);
+		xmlNewProp(node_tx, BAD_CAST "id", buf);*/
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", (quad[i].page<<1) & 0xff);
+		xmlNewProp(node_tx, BAD_CAST "page", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].clutid & 3);
+		xmlNewProp(node_tx, BAD_CAST "clut", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tu0);
+		xmlNewProp(node_tx, BAD_CAST "tu0", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tv0);
+		xmlNewProp(node_tx, BAD_CAST "tv0", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tu1);
+		xmlNewProp(node_tx, BAD_CAST "tu1", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tv1);
+		xmlNewProp(node_tx, BAD_CAST "tv1", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tu2);
+		xmlNewProp(node_tx, BAD_CAST "tu2", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tv2);
+		xmlNewProp(node_tx, BAD_CAST "tv2", buf);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tu3);
+		xmlNewProp(node_tx, BAD_CAST "tu3", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].tv3);
+		xmlNewProp(node_tx, BAD_CAST "tv3", buf);
+
+		/* Vertices */
+		node_v = xmlNewNode(NULL, BAD_CAST "vtx");
+		xmlAddChild(node, node_v);
+
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].v0);
+		xmlNewProp(node_v, BAD_CAST "v0", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].v1);
+		xmlNewProp(node_v, BAD_CAST "v1", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].v2);
+		xmlNewProp(node_v, BAD_CAST "v2", buf);
+		xmlStrPrintf(buf, sizeof(buf), BAD_CAST "%d", quad[i].v3);
+		xmlNewProp(node_v, BAD_CAST "v3", buf);
+	}
+}
+
