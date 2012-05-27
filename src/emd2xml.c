@@ -1147,8 +1147,6 @@ void emd3AddModel(Uint8 *src, Uint32 srcLen, xmlNodePtr root)
 		/* Quads */
 		emd3AddModelQuads((emd3_quad_t *) &tmp[SDL_SwapLE32(model_obj[i].quad_offset)],
 			SDL_SwapLE16(model_obj[i].quad_count), node);
-
-		/*tmp += sizeof(emd3_model_object_t);*/
 	}
 }
 
@@ -1262,4 +1260,3 @@ void emd3AddModelQuads(emd3_quad_t *quad, Uint32 count, xmlNodePtr root)
 		xmlNewProp(node_v, BAD_CAST "v3", buf);
 	}
 }
-
