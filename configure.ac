@@ -39,6 +39,12 @@ fi
 
 AM_PATH_SDL( 1.2.0 , :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 
+# LibXml
+
+PKG_CHECK_MODULES([LIBXML], [libxml-2.0],
+	[AC_DEFINE([HAVE_LIBXML], [1], [Use libxml])]
+) 
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  vs2005/Makefile])
