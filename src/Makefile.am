@@ -1,5 +1,5 @@
-bin_PROGRAMS = adt2img bss2bmp pak2tim pix2bmp ptc2bmp rgb2bmp rofs sld \
-	extract_bin iso_search file2pak emd2xml
+bin_PROGRAMS = adt2img bss2bmp bsssld2tim pak2tim pix2bmp ptc2bmp rgb2bmp rofs \
+	sld extract_bin iso_search file2pak emd2xml
 
 AM_CFLAGS = $(SDL_CFLAGS)
 
@@ -15,6 +15,10 @@ bss2bmp_SOURCES = bss2bmp.c depack_mdec.c depack_vlc.c idctfst.c \
 	file_functions.c
 
 bss2bmp_headers = depack_mdec.h depack_vlc.h idctfst.h
+
+bsssld2tim_SOURCES = bsssld2tim.c file_functions.c depack_bsssld.c
+
+bsssld2tim_headers = depack_bsssld.h
 
 pak2tim_SOURCES = pak2tim.c file_functions.c depack_pak.c param.c
 
@@ -49,5 +53,6 @@ emd2xml_LDFLAGS = $(LIBXML_LIBS)
 emd2xml_headers = emd_common.h emd1.h emd2.h emd3.h
 
 EXTRA_DIST = $(common_headers) $(adt2img_headers) $(bss2bmp_headers) \
-	$(pak2tim_headers) $(tim2pak_headers) $(sld_headers) \
-	$(iso_search_headers) $(file2pak_headers) $(emd2xml_headers)
+	$(bsssld2tim_headers) $(pak2tim_headers) $(tim2pak_headers) \
+	$(sld_headers) $(iso_search_headers) $(file2pak_headers) \
+	$(emd2xml_headers)
