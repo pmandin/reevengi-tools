@@ -33,6 +33,11 @@ adt2img:	Depack Resident Evil 2 PC ADT image files.
 bss2bmp:	Depack PS1 BSS image files.
 		The result is saved to a BMP image.
 
+bsssld2tim:	Depack PS1 TIM mask (stored in BSS after background)
+		You must extract it from BSS first.
+		Use '-re3' to use RE3 algorithm (default is RE2)
+		The result is saved to a TIM image.
+
 pak2tim:	Depack Resident Evil PC PAK image files.
 		The result is saved to a TIM image.
 
@@ -72,6 +77,6 @@ iso_search:	Search and extract some files from Resident Evil 3 PS1 CD-ROM
 		Use '-s' command line parameter to dump data for source code
 		integration.
 
--- 
+--
 Patrice Mandin <patmandin@gmail.com>
 Web: http://pmandin.atari.org/

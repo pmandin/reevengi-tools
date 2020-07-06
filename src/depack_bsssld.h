@@ -21,6 +21,7 @@
 #ifndef DEPACK_BSSSLD_H
 #define DEPACK_BSSSLD_H
 
-void bsssld_depack(Uint8 *srcPtr, int srcLen, Uint8 **dstBufPtr, int *dstLength);
+void bsssld_depack_re2(Uint8 *srcPtr, int srcLen, Uint8 **dstBufPtr, int *dstLength);
+void bsssld_depack_re3(Uint8 *srcPtr, int srcLen, Uint8 **dstBufPtr, int *dstLength);
 
 #endif /* DEPACK_BSSSLD_H */

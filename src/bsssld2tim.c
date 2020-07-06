@@ -30,6 +30,13 @@
 
 #include "file_functions.h"
 #include "depack_bsssld.h"
+#include "param.h"
+
+/*--- Variables ---*/
+
+static int depackre3;
+
+/*--- Functions ---*/
 
 int depack_image(const char *filename)
 {
@@ -56,7 +63,12 @@ int depack_image(const char *filename)
 	SDL_RWread(src, srcBuffer, srcLen, 1);
 	SDL_RWclose(src);
 
-	bsssld_depack(srcBuffer, srcLen, &dstBuffer, &dstBufLen);
+	if (depackre3) {
+		bsssld_depack_re3(srcBuffer, srcLen, &dstBuffer, &dstBufLen);
+	} else {
+		bsssld_depack_re2(srcBuffer, srcLen, &dstBuffer, &dstBufLen);
+	}
+
 	if (dstBuffer && dstBufLen) {
 		save_tim(filename, dstBuffer, dstBufLen);
 		free(dstBuffer);
@@ -74,6 +86,11 @@ int main(int argc, char **argv)
 	if (argc<2) {
 		fprintf(stderr, "Usage: %s /path/to/filename.bin\n", argv[0]);
 		return 1;
+	}
+
+	depackre3 = 0;
+	if (param_check("-re3",argc,argv)>=0) {
+		depackre3 = 1;
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO)<0) {

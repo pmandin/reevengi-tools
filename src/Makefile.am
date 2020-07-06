@@ -16,7 +16,8 @@ bss2bmp_SOURCES = bss2bmp.c depack_mdec.c depack_vlc.c idctfst.c \
 
 bss2bmp_headers = depack_mdec.h depack_vlc.h idctfst.h
 
-bsssld2tim_SOURCES = bsssld2tim.c file_functions.c depack_bsssld.c
+bsssld2tim_SOURCES = bsssld2tim.c file_functions.c depack_bsssld.c \
+	param.c
 
 bsssld2tim_headers = depack_bsssld.h
 
