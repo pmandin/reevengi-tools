@@ -94,7 +94,11 @@ void bsssld_depack_re3(Uint8 *srcPtr, int srcLen, Uint8 **dstBufPtr, int *dstLen
 
 	srcPos = 4;
 	dstPos = 0;
-	while ((srcPos<srcLen) && (dstPos<buflen)) {
+	while ((srcPos<srcLen) /*&& (dstPos<buflen)*/) {
+		if (srcPtr[srcPos] == 0) {
+			break;
+		}
+
 		if ((srcPtr[srcPos] & 0x80) != 0) {
 			count = srcPtr[srcPos++] & 0x7f;
 
