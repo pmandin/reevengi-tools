@@ -88,7 +88,7 @@ void bsssld_depack_re3(Uint8 *srcPtr, int srcLen, Uint8 **dstBufPtr, int *dstLen
 
 	buflen = SDL_SwapLE32(*((Uint32 *)srcPtr));
 
-	dstPtr = *dstBufPtr = malloc(buflen);
+	dstPtr = *dstBufPtr = malloc(buflen + srcLen);
 	memset(*dstBufPtr, 0, buflen);
 	*dstLength = buflen;
 
