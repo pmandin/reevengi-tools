@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	int retval;
 
 	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.bin\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-re3] /path/to/filename.bin\n", argv[0]);
 		return 1;
 	}
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 	}
 	atexit(SDL_Quit);
 
-	retval = depack_image(argv[1]);
+	retval = depack_image(argv[argc-1]);
 
 	SDL_Quit();
 	return retval;
