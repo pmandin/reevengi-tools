@@ -32,6 +32,9 @@
 #include "depack_mdec.h"
 #include "file_functions.h"
 
+static int bss_w=320;
+static int bss_h=240;
+
 int convert_image(const char *filename)
 {
 	SDL_RWops *src;
@@ -46,7 +49,7 @@ int convert_image(const char *filename)
 	}
 	vlc_depack(src, &dstBuffer, &dstBufLen);
 	SDL_RWclose(src);
-			
+
 	if (dstBuffer && dstBufLen) {
 		SDL_RWops *mdec_src;
 
@@ -55,11 +58,11 @@ int convert_image(const char *filename)
 			Uint8 *dstMdecBuf;
 			int dstMdecLen;
 
-			mdec_depack(mdec_src, &dstMdecBuf, &dstMdecLen, 320,240);
+			mdec_depack(mdec_src, &dstMdecBuf, &dstMdecLen, bss_w, bss_h);
 			SDL_RWclose(mdec_src);
 
 			if (dstMdecBuf && dstMdecLen) {
-				SDL_Surface *image = mdec_surface(dstMdecBuf,320,240,0);
+				SDL_Surface *image = mdec_surface(dstMdecBuf, bss_w, bss_h,0);
 				if (image) {
 					save_bmp(filename, image);
 
@@ -79,11 +82,21 @@ int convert_image(const char *filename)
 
 int main(int argc, char **argv)
 {
-	int retval;
+	int retval, p;
 
 	if (argc<2) {
-		fprintf(stderr, "Usage: %s /path/to/filename.bss\n", argv[0]);
+		fprintf(stderr, "Usage: %s /path/to/filename.bss [-w <width>] [-h <height]\n", argv[0]);
 		return 1;
+	}
+
+	p = param_present("-w", argc, argv);
+	if (p && p < argc-1) {
+		bss_w = atoi(argv[p+1]);
+	}
+
+	p = param_present("-h", argc, argv);
+	if (p && p < argc-1) {
+		bss_h = atoi(argv[p+1]);
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO)<0) {

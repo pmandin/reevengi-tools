@@ -32,6 +32,8 @@ adt2img:	Depack Resident Evil 2 PC ADT image files.
 
 bss2bmp:	Depack PS1 BSS image files.
 		The result is saved to a BMP image.
+		Use '-w <width>' to change width (default = 320)
+		Use '-h <height>' to change height (default = 240)
 
 bsssld2tim:	Depack PS1 TIM mask (stored in BSS after background)
 		You must extract it from BSS first.

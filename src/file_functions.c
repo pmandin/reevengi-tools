@@ -78,7 +78,7 @@ void save_file(const char *filename, void *buffer, int length)
 void save_bmp(const char *src_filename, SDL_Surface *image)
 {
 	char *dst_filename;
-	
+
 	dst_filename = get_filename_ext(src_filename, ".bmp");
 	if (!dst_filename) {
 		return;
@@ -133,4 +133,15 @@ void save_raw(const char *src_filename, Uint8 *buffer, int length)
 	save_file(dst_filename, buffer, length);
 
 	free(dst_filename);
+}
+
+int param_present(char *param, int pargc, char **pargv)
+{
+	int	i;
+
+	for (i=1; i<pargc; i++)
+		if ( !strcmp(param, pargv[i]) )
+			return i;
+
+	return 0;
 }

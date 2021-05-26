@@ -33,4 +33,6 @@ void save_pak(const char *src_filename, Uint8 *buffer, int length);
 
 void save_raw(const char *src_filename, Uint8 *buffer, int length);
 
+int param_present(char *param, int pargc, char **pargv);
+
 #endif /* FILE_FUNCTIONS_H */
