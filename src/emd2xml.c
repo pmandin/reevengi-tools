@@ -20,6 +20,8 @@
 
 #include <libxml/xmlversion.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <SDL.h>
 
 #ifdef HAVE_CONFIG_H
