@@ -1,12 +1,12 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
-AC_INIT(reevengi-tools, 0.5, patmandin@gmail.com)
+AC_PREREQ([2.71])
+AC_INIT([reevengi-tools],[0.5],[patmandin@gmail.com])
 AC_CONFIG_SRCDIR([src/pak2tim.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([autotools])
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
@@ -16,15 +16,15 @@ AC_PROG_CC
 # Checks for libraries.
 
 # Checks for header files.
-AC_HEADER_STDC
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
 # Checks for library functions.
-#AC_FUNC_MALLOC
-#AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset strrchr pow])
 
 # Checks for libraries.
