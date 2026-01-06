@@ -55,6 +55,9 @@ file2pak:	Pack Resident Evil PC PAK image files.
 pix2bmp:	Convert Resident Evil PC PIX image files.
 		The result is saved to a BMP image.
 
+prs2file:	Depack a Saturn PRS compressed file 'filename.ext' to
+		'filename.ext.out'
+
 ptc2bmp:	Convert Resident Evil PC PTC image files.
 		The result is saved to a BMP image.
 
